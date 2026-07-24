@@ -1,0 +1,20 @@
+const BLOCK_TYPES = {
+    CONTAINER: "CONTAINER",
+    SECTION: "SECTION",
+    ROW: "ROW",
+    COLUMN: "COLUMN",
+    HERO: "HERO",
+    TITLE: "TITLE",
+    TEXT: "TEXT",
+    IMAGE: "IMAGE",
+    GALLERY: "GALLERY",
+    CTA: "CTA",
+    FAQ: "FAQ",
+    FEATURES: "FEATURES",
+    HIGHLIGHT: "HIGHLIGHT",
+    METRICS: "METRICS",
+    TESTIMONIALS: "TESTIMONIALS",
+    TIMELINE: "TIMELINE",
+};
+
+export default BLOCK_TYPES;

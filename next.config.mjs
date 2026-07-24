@@ -1,9 +1,18 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
-  compiler: {
-    styledComponents: true
-  }
-}
+    compiler: {
+        styledComponents: true,
+    },
 
-export default nextConfig
+    images: {
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "res.cloudinary.com",
+            },
+        ],
+    },
+};
+
+export default nextConfig;
