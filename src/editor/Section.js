@@ -1,20 +1,34 @@
+"use client";
+
 import { resolveStyle } from "@/renderer/theme/resolveStyle";
 import Container from "@/components/ui/Container";
+import useBlockSelection from "@/pageBuilder/hooks/useBlockSelection";
 
 export default function Section({ block, children }) {
-    //console.log("ROW CHILDREN", block.children);
-
-    //console.log("ROW FILE");
+    
+    const { isSelected, handleSelect } = useBlockSelection(block);
 
     const { content } = block;
     const style = resolveStyle(content);
 
     return (
         <section
+            onClick={handleSelect}
             style={{
                 position: "relative",
                 overflow: "hidden",
+
+                outline: isSelected
+                    ? "3px solid #3B82F6"
+                    : "1px dashed transparent",
+                
+                outlineOffset: "-3px",
+
+                cursor: "pointer",
+                
                 ...style,
+
+                // ...editorStyle,
             }}
         >
             {content.overlay && (
