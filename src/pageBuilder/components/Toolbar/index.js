@@ -2,6 +2,7 @@ import { ToolbarContainer } from "./styles";
 
 import ToolbarLeft from "./components/ToolbarLeft";
 import ToolbarCenter from "./components/ToolbarCenter";
+import ToolbarDevices from "./components/ToolbarDevices";
 import ToolbarRight from "./components/ToolbarRight";
 
 export default function Toolbar() {
@@ -11,6 +12,8 @@ export default function Toolbar() {
             <ToolbarLeft />
 
             <ToolbarCenter />
+
+            <ToolbarDevices />
 
             <ToolbarRight />
 

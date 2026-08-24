@@ -1,6 +1,9 @@
+"use client";
+
 import { PageContainer } from "./styles";
 import useBuilderStore from "@/pageBuilder/store/builderStore";
 import BlockRenderer from "@/pageBuilder/renderer/BlockRenderer";
+import { getViewportWidth } from "@/pageBuilder/utils/viewport";
 
 export default function Page() {
 
@@ -8,10 +11,14 @@ export default function Page() {
         state => state.layout
     );
 
-    console.log("Layout atual:", layout);
+    const viewport = useBuilderStore(
+        state => state.viewport
+    );
+
+    const width = getViewportWidth(viewport);
 
     return (
-        <PageContainer>
+        <PageContainer $width={width}>
 
             {!layout.length ? (
 
