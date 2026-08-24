@@ -4,9 +4,9 @@ import { resolveStyle } from "@/renderer/theme/resolveStyle";
 import Container from "@/components/ui/Container";
 import useBlockSelection from "@/pageBuilder/hooks/useBlockSelection";
 
-export default function Section({ block, children }) {
+export default function Section({ block, children, parentBlock = null, ancestors = [], }) {
     
-    const { isSelected, handleSelect } = useBlockSelection(block);
+    const { isSelected, handleSelect } = useBlockSelection(block, parentBlock, ancestors);
 
     const { content } = block;
     const style = resolveStyle(content);

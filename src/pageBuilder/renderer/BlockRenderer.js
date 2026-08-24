@@ -4,17 +4,17 @@ import BlockWrapper from "./BlockWrapper";
 
 export default function BlockRenderer({ block, parentBlock = null, ancestors = [], }) {
 
-    console.log("Render:", block.type);
+    //console.log("Render:", block.type);
 
     if (!validateBlock(block)) {
-        console.warn("Bloco inválido:", block);
+        //console.warn("Bloco inválido:", block);
         return null;
     }
 
     const Component = blocks[block.type];
 
     if (!Component) {
-        console.warn("Bloco não registrado:", block.type);
+        //console.warn("Bloco não registrado:", block.type);
         return null;
     }
 

@@ -4,9 +4,9 @@ import { resolveStyle } from "@/renderer/theme/resolveStyle";
 import { resolveGridSpan } from "@/renderer/theme/resolveToken";
 import useBlockSelection from "@/pageBuilder/hooks/useBlockSelection";
 
-export default function Column({ block, children, parentBlock }) {
+export default function Column({ block, children, parentBlock = null, ancestors = [], }) {
 
-    const { isSelected, handleSelect } = useBlockSelection(block, parentBlock);
+    const { isSelected, handleSelect } = useBlockSelection(block, parentBlock, ancestors);
 
     const { content } = block;
 

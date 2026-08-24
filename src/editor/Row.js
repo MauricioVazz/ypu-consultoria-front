@@ -3,9 +3,9 @@
 import { resolveStyle } from "@/renderer/theme/resolveStyle";
 import useBlockSelection from "@/pageBuilder/hooks/useBlockSelection";
 
-export default function Row({ block, children }) {
+export default function Row({ block, children, parentBlock = null, ancestors = [], }) {
 
-    const { isSelected, handleSelect } = useBlockSelection(block);
+    const { isSelected, handleSelect } = useBlockSelection(block, parentBlock, ancestors);
 
     const { content } = block;
 

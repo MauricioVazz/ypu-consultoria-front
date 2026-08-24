@@ -2,7 +2,7 @@
 
 import useBuilderStore from "@/pageBuilder/store/builderStore";
 
-export default function useBlockSelection(block, parentBlock = null) {
+export default function useBlockSelection(block, parentBlock = null, ancestors = []) {
 
     const selectedId = useBuilderStore(
         state => state.selectedBlock?.publicId
@@ -15,22 +15,42 @@ export default function useBlockSelection(block, parentBlock = null) {
     const isSelected =
         selectedId === block.publicId;
 
+    const getTargetBlock = (altKey) => {
+
+        if (!altKey) {
+            return block;
+        }
+
+        const blockPath = [
+            ...ancestors,
+            block,
+        ];
+
+        const selectedIndex = blockPath.findIndex(
+            item =>
+                item.publicId === selectedId
+        );
+
+        if (selectedIndex > 0) {
+            return blockPath[selectedIndex - 1];
+        }
+
+        if (selectedIndex === 0) {
+            return blockPath[0];
+        }
+
+        return parentBlock ?? block;
+    };
 
     const handleSelect = (e) => {
 
         e.stopPropagation();
 
-        console.log(
-            "SELECT:",
-            block.type,
-            block.publicId,
-            "PARENT:",
-            parentBlock?.type
-        );
+        const targetBlock =
+            getTargetBlock(e.altKey);
 
-        selectBlock(block);
+        selectBlock(targetBlock);
     };
-
 
     return {
         isSelected,
