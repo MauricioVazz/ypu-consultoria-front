@@ -28,22 +28,20 @@ export default function ToolbarDevices() {
     );
 
     return (
-        <div>
-            <select
-                value={viewport}
-                onChange={e =>
-                    setViewport(e.target.value)
-                }
-            >
-                {devices.map(device => (
-                    <option
-                        key={device.id}
-                        value={device.id}
-                    >
-                        {device.label}
-                    </option>
-                ))}
-            </select>
-        </div>
+        <select
+            value={viewport}
+            onChange={e =>
+                setViewport(e.target.value)
+            }
+        >
+            {devices.map(device => (
+                <option
+                    key={device.id}
+                    value={device.id}
+                >
+                    {device.label}
+                </option>
+            ))}
+        </select>
     );
 }

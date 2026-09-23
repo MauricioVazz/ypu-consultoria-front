@@ -1,4 +1,4 @@
-import { ToolbarContainer } from "./styles";
+import { ToolbarContainer, ToolbarActions } from "./styles";
 
 import ToolbarLeft from "./components/ToolbarLeft";
 import ToolbarCenter from "./components/ToolbarCenter";
@@ -13,9 +13,10 @@ export default function Toolbar() {
 
             <ToolbarCenter />
 
-            <ToolbarDevices />
-
-            <ToolbarRight />
+            <ToolbarActions>
+                <ToolbarDevices />
+                <ToolbarRight />
+            </ToolbarActions>
 
         </ToolbarContainer>
     );

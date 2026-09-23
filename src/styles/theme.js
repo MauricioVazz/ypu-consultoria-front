@@ -24,6 +24,7 @@ export const theme = {
   },
 
   spacing: {
+    none: '0px',
     xs: '8px',
     sm: '16px',
     md: '32px',
