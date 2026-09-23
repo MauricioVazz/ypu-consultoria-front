@@ -2,6 +2,27 @@
 
 import { create } from 'zustand';
 
+const findBlockByPublicId = (blocks, publicId) => {
+    for (const block of blocks) {
+        if (block.publicId === publicId) {
+            return block;
+        }
+
+        if (block.children?.length) {
+            const found = findBlockByPublicId(
+                block.children,
+                publicId
+            );
+
+            if (found) {
+                return found;
+            }
+        }
+    }
+
+    return null;
+};
+
 const useBuilderStore = create((set, get) => ({
 
     project: null,
@@ -14,6 +35,7 @@ const useBuilderStore = create((set, get) => ({
 
     viewport: 'desktop',
 
+    dirtyBlocks: [],
 
     setLayout: (layout) =>
         set({ layout }),
@@ -30,6 +52,60 @@ const useBuilderStore = create((set, get) => ({
     setViewport: (viewport) =>
         set({ viewport }),
 
+    findBlock: publicId =>
+        findBlockByPublicId(
+            get().layout,
+            publicId
+        ),
+
+    saveBlock: async publicId => {
+        const block = findBlockByPublicId(
+            get().layout,
+            publicId
+        );
+
+        if (!block) {
+            console.error(
+                "Block not found:",
+                publicId
+            );
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/blocks/${publicId}`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        content: block.content,
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(
+                    `Failed to save block: ${response.status}`
+                );
+            }
+
+            console.log(
+                "Block saved successfully:",
+                publicId
+            );
+
+            get().markBlockSaved(publicId);
+
+        } catch (error) {
+            console.error(
+                "Error saving block:",
+                error
+            );
+        }
+    },
 
     updateBlock: (publicId, content) => {
 
@@ -73,10 +149,21 @@ const useBuilderStore = create((set, get) => ({
             return {
                 layout,
                 selectedBlock,
+
+                dirtyBlocks: state.dirtyBlocks.includes(publicId)
+                    ? state.dirtyBlocks
+                    : [...state.dirtyBlocks, publicId],
             };
         });
 
     },
+
+    markBlockSaved: publicId =>
+        set(state => ({
+            dirtyBlocks: state.dirtyBlocks.filter(
+                id => id !== publicId
+            ),
+        })),
 
 }));
 
