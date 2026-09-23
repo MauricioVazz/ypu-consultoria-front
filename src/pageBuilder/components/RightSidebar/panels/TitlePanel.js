@@ -1,7 +1,10 @@
 "use client";
 
 import useBuilderStore from "@/pageBuilder/store/builderStore";
-import { PaddingControl } from "../controls";
+import {
+    PaddingControl,
+    TextControl,
+} from "../controls";
 
 export default function TitlePanel({ block }) {
     const updateBlock = useBuilderStore(
@@ -24,6 +27,14 @@ export default function TitlePanel({ block }) {
         <div>
             <h3>Título</h3>
 
+            <TextControl
+                label="Texto"
+                value={content.text ?? ""}
+                onChange={value =>
+                    handleChange("text", value)
+                }
+            />
+
             {/* controles de texto, alinhamento, cor e nível */}
 
             <PaddingControl
@@ -32,7 +43,7 @@ export default function TitlePanel({ block }) {
             />
 
             <h4>Dados do bloco</h4>
-            
+
             <pre> {JSON.stringify(content, null, 2)} </pre>
         </div>
     );
