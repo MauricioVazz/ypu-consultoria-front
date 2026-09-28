@@ -87,6 +87,13 @@ const useBuilderStore = create((set, get) => ({
             );
 
             if (!response.ok) {
+                const errorData = await response.json();
+
+                console.error(
+                    "Backend save error:",
+                    errorData
+                );
+
                 throw new Error(
                     `Failed to save block: ${response.status}`
                 );
@@ -104,6 +111,8 @@ const useBuilderStore = create((set, get) => ({
                 "Error saving block:",
                 error
             );
+
+            throw error;
         }
     },
 

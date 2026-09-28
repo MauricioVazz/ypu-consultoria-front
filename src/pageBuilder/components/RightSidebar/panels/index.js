@@ -1,8 +1,10 @@
-import DefaultPanel from "./DefaultPanel";
+import DefaultPanel from "./DefaultPanel.js";
 import TitlePanel from "./TitlePanel";
+import TextPanel from "./TextPanel";
 
 export const panelMap = {
     TITLE: TitlePanel,
+    TEXT: TextPanel,
     DEFAULT: DefaultPanel
 };
 

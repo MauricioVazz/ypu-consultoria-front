@@ -28,7 +28,7 @@ export default function Toolbar() {
 
             <ToolbarLeft />
 
-            {/* <ToolbarCenter /> */}
+            <ToolbarCenter />
 
             <ToolbarActions>
                 <pre>
