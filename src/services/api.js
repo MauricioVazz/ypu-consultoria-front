@@ -5,9 +5,15 @@ console.log("API_URL =", API_URL);
 export async function api(path, options = {}) {
     console.log(`${API_URL}${path}`);
 
+    const isFormData = options.body instanceof FormData;
+
     const response = await fetch(`${API_URL}${path}`, {
         headers: {
-            "Content-Type": "application/json",
+            ...(isFormData
+                ? {}
+                : {
+                    "Content-Type": "application/json",
+                }),
             ...(options.headers || {}),
         },
         cache: "no-store",
@@ -17,8 +23,11 @@ export async function api(path, options = {}) {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message || "Erro ao comunicar com a API.");
+        throw new Error(
+            data.message || "Erro ao comunicar com a API."
+        );
     }
 
     return data;
+
 }

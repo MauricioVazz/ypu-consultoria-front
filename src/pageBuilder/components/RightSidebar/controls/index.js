@@ -9,3 +9,4 @@ export { default as RadiusControl } from "./RadiusControl";
 export { default as ShadowControl } from "./ShadowControl";
 export { default as ObjectFitControl } from "./ObjectFitControl";
 export { default as AspectRatioControl } from "./AspectRatioControl";
+export { default as ImageUpload } from "./ImageUpload";

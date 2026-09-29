@@ -31,3 +31,21 @@ export async function getLibraryImages(
 
     return data.images;
 }
+
+export async function uploadImages(libraryPublicId, files) {
+    const formData = new FormData();
+
+    files.forEach(file => {
+        formData.append("images", file);
+    });
+
+    const data = await api(
+        `/media/${libraryPublicId}/images`,
+        {
+            method: "POST",
+            body: formData,
+        }
+    );
+
+    return data.images;
+}

@@ -36,7 +36,10 @@ import {
     ShadowControl,
     ObjectFitControl,
     AspectRatioControl,
+    ImageUpload,
 } from "../../controls";
+
+import MediaPicker from "@/pageBuilder/components/MediaPicker";
 
 export default function ImagePanel({ block }) {
     const updateBlock = useBuilderStore(
@@ -62,9 +65,12 @@ export default function ImagePanel({ block }) {
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState(false);
 
+    const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
+
     const [images, setImages] = useState([]);
     const [loadingImages, setLoadingImages] = useState(true);
     const [imageError, setImageError] = useState(false);
+    const [libraryPublicId, setLibraryPublicId] = useState(null);
 
     const { content } = block;
 
@@ -90,6 +96,10 @@ export default function ImagePanel({ block }) {
         );
     };
 
+    const handleConfirm = () => {
+        setIsMediaPickerOpen(false);
+    };
+
     useEffect(() => {
 
         if (!projectPublicId) {
@@ -108,12 +118,12 @@ export default function ImagePanel({ block }) {
                         projectPublicId
                     );
 
+                setLibraryPublicId(library.publicId);
+
                 const libraryImages =
                     await getLibraryImages(
                         library.publicId
                     );
-                
-                console.log("IMAGENS DA BIBLIOTECA:", libraryImages);
 
                 setImages(libraryImages);
 
@@ -170,6 +180,41 @@ export default function ImagePanel({ block }) {
                 <SectionTitle>
                     Selecionar imagem
                 </SectionTitle>
+
+                <button
+                    type="button"
+                    onClick={() => setIsMediaPickerOpen(true)}
+                >
+                    Escolher imagem
+                </button>
+
+                <MediaPicker
+                    open={isMediaPickerOpen}
+                    onClose={() => setIsMediaPickerOpen(false)}
+                    onConfirm={handleConfirm}
+                />
+
+                <ImageUpload
+                    libraryPublicId={libraryPublicId}
+                    multiple={false}
+                    onUploadComplete={uploadedImages => {
+                        if (!uploadedImages.length) {
+                            return;
+                        }
+
+                        const uploadedImage = uploadedImages[0];
+
+                        setImages(currentImages => [
+                            ...currentImages,
+                            uploadedImage,
+                        ]);
+
+                        handleChange(
+                            "imagePublicId",
+                            uploadedImage.publicId
+                        );
+                    }}
+                />
 
                 {loadingImages && (
                     <LoadingMessage>
