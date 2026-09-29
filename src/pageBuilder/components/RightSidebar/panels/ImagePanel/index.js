@@ -96,7 +96,16 @@ export default function ImagePanel({ block }) {
         );
     };
 
-    const handleConfirm = () => {
+    const handleConfirm = publicId => {
+        if (!publicId) {
+            return;
+        }
+
+        handleChange(
+            "imagePublicId",
+            publicId
+        );
+
         setIsMediaPickerOpen(false);
     };
 
@@ -188,11 +197,15 @@ export default function ImagePanel({ block }) {
                     Escolher imagem
                 </button>
 
-                <MediaPicker
-                    open={isMediaPickerOpen}
-                    onClose={() => setIsMediaPickerOpen(false)}
-                    onConfirm={handleConfirm}
-                />
+                {isMediaPickerOpen && (
+                    <MediaPicker
+                        open={true}
+                        onClose={() => setIsMediaPickerOpen(false)}
+                        onConfirm={handleConfirm}
+                        libraryPublicId={libraryPublicId}
+                        initialSelectedImagePublicId={content.imagePublicId}
+                    />
+                )}
 
                 <ImageUpload
                     libraryPublicId={libraryPublicId}
