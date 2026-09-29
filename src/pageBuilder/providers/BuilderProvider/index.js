@@ -16,7 +16,13 @@ export default function BuilderProvider({ publicId }) {
         state => state.setLoading
     );
 
+    const setProjectPublicId = useBuilderStore(
+        state => state.setProjectPublicId
+    );
+
     useEffect(() => {
+
+        setProjectPublicId(publicId);
 
         async function loadProject() {
 
@@ -45,7 +51,7 @@ export default function BuilderProvider({ publicId }) {
 
         loadProject();
 
-    }, [publicId, setLayout, setLoading]);
+    }, [publicId, setProjectPublicId, setLayout, setLoading]);
 
     return <BuilderLayout />;
 

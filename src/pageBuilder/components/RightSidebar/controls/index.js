@@ -4,3 +4,8 @@ export { default as TypographyControl } from "./TypographyControl";
 export { default as FontWeightControl } from "./FontWeightControl";
 export { default as TextAlignControl } from "./TextAlignControl";
 export { default as ColorControl } from "./ColorControl";
+export { default as WidthControl } from "./WidthControl";
+export { default as RadiusControl } from "./RadiusControl";
+export { default as ShadowControl } from "./ShadowControl";
+export { default as ObjectFitControl } from "./ObjectFitControl";
+export { default as AspectRatioControl } from "./AspectRatioControl";

@@ -19,6 +19,11 @@ export default function Image({ block }) {
 
     const [image, setImage] = useState(null);
 
+    const aspectRatio =
+        content.aspectRatio === "AUTO" && image?.width && image?.height
+            ? `${image.width} / ${image.height}`
+            : style.aspectRatio || "16 / 9";
+
     useEffect(() => {
 
         if (!imagePublicId) {
@@ -63,7 +68,7 @@ export default function Image({ block }) {
 
                     width: "100%",
 
-                    aspectRatio: style.aspectRatio || "16 / 9",
+                    aspectRatio,
 
                     borderRadius: style.borderRadius,
 

@@ -27,6 +27,8 @@ const useBuilderStore = create((set, get) => ({
 
     project: null,
 
+    projectPublicId: null,
+
     layout: [],
 
     selectedBlock: null,
@@ -42,6 +44,9 @@ const useBuilderStore = create((set, get) => ({
 
     setLoading: (loading) =>
         set({ loading }),
+
+    setProjectPublicId: (projectPublicId) =>   
+        set({ projectPublicId }),
 
     selectBlock: (block) =>
         set({

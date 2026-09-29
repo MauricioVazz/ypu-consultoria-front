@@ -72,6 +72,7 @@ export function resolveRadius(value) {
     if (!value) return undefined;
 
     const map = {
+        NONE: theme.radius.none,
         SM: theme.radius.sm,
         MD: theme.radius.md,
         LG: theme.radius.lg,
@@ -209,7 +210,7 @@ export function resolveAspectRatio(value) {
 
         LANDSCAPE: "4 / 3",
 
-        VIDEO: "16 / 9"
+        WIDESCREEN: "16 / 9"
 
     };
 
