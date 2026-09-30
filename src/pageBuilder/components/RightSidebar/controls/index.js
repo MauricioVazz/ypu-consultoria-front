@@ -10,3 +10,7 @@ export { default as ShadowControl } from "./ShadowControl";
 export { default as ObjectFitControl } from "./ObjectFitControl";
 export { default as AspectRatioControl } from "./AspectRatioControl";
 export { default as ImageUpload } from "./ImageUpload";
+export { default as LayoutControl } from "./LayoutControl";
+export { default as ColumnsControl } from "./ColumnsControl";
+export { default as GapControl } from "./GapControl";
+export { default as LightboxControl } from "./LightboxControl";

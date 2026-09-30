@@ -28,7 +28,9 @@ export default function MediaPicker({
     onClose,
     onConfirm,
     libraryPublicId,
+    multiple = false,
     initialSelectedImagePublicId,
+    initialSelectedImagePublicIds = [],
 }) {
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -36,6 +38,9 @@ export default function MediaPicker({
 
     const [selectedImagePublicId, setSelectedImagePublicId] =
         useState(initialSelectedImagePublicId);
+
+    const [selectedImagePublicIds, setSelectedImagePublicIds] =
+        useState(initialSelectedImagePublicIds);
 
     useEffect(() => {
         if (!open || !libraryPublicId) {
@@ -68,10 +73,31 @@ export default function MediaPicker({
     }, [open, libraryPublicId]);
 
     const handleSelectImage = publicId => {
-        setSelectedImagePublicId(publicId);
+        if (!multiple) {
+            setSelectedImagePublicId(publicId);
+            return;
+        }
+
+        setSelectedImagePublicIds(current => {
+            if (current.includes(publicId)) {
+                return current.filter(
+                    id => id !== publicId
+                );
+            }
+
+            return [
+                ...current,
+                publicId,
+            ];
+        });
     };
 
     const handleConfirm = () => {
+        if (multiple) {
+            onConfirm?.(selectedImagePublicIds);
+            return;
+        }
+
         onConfirm?.(selectedImagePublicId);
     };
 
@@ -83,7 +109,9 @@ export default function MediaPicker({
         <Overlay>
             <Modal>
                 <Header>
-                    <Title>Biblioteca de mídia</Title>
+                    <Title>
+                        Biblioteca de mídia
+                    </Title>
 
                     <CloseButton
                         type="button"
@@ -103,8 +131,8 @@ export default function MediaPicker({
 
                     {!loading && error && (
                         <ErrorMessage>
-                            Não foi possível carregar as imagens
-                            da biblioteca.
+                            Não foi possível carregar
+                            as imagens da biblioteca.
                         </ErrorMessage>
                     )}
 
@@ -112,7 +140,8 @@ export default function MediaPicker({
                         !error &&
                         images.length === 0 && (
                             <EmptyMessage>
-                                Nenhuma imagem disponível na biblioteca.
+                                Nenhuma imagem disponível
+                                na biblioteca.
                             </EmptyMessage>
                         )}
 
@@ -121,9 +150,17 @@ export default function MediaPicker({
                         images.length > 0 && (
                             <ImageGrid>
                                 {images.map(image => {
-                                    const selected =
-                                        image.publicId ===
-                                        selectedImagePublicId;
+                                    const selected = multiple
+                                        ? selectedImagePublicIds.includes(
+                                            image.publicId
+                                        )
+                                        : image.publicId === selectedImagePublicId;
+
+                                    const selectedIndex = multiple
+                                        ? selectedImagePublicIds.indexOf(
+                                            image.publicId
+                                        )
+                                        : -1;
 
                                     return (
                                         <ImageOption
@@ -150,7 +187,9 @@ export default function MediaPicker({
 
                                             {selected && (
                                                 <SelectedLabel>
-                                                    Selecionada
+                                                    {multiple
+                                                        ? `#${selectedIndex + 1}`
+                                                        : "Selecionada"}
                                                 </SelectedLabel>
                                             )}
                                         </ImageOption>
@@ -171,7 +210,11 @@ export default function MediaPicker({
                     <SelectButton
                         type="button"
                         onClick={handleConfirm}
-                        disabled={!selectedImagePublicId}
+                        disabled={
+                            multiple
+                                ? selectedImagePublicIds.length === 0
+                                : !selectedImagePublicId
+                        }
                     >
                         Selecionar
                     </SelectButton>
@@ -179,4 +222,5 @@ export default function MediaPicker({
             </Modal>
         </Overlay>
     );
+
 }

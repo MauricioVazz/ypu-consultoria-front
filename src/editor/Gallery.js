@@ -1,20 +1,35 @@
 "use client";
 
-const PLACEHOLDERS = Array.from({ length: 6 }).map((_, i) => ({
-    publicId: null,
-    url: null,
-    alt: `Placeholder ${i + 1}`,
-    placeholder: true,
-}));
+import {
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
 
-import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import Card from "@/components/ui/Card";
+
 import { theme } from "@/styles/theme";
+
+import {
+    resolveSpacing,
+    resolveColumns,
+} from "@/renderer/theme/resolveToken";
+
 import { getImagesByPublicIds } from "@/services/media";
 
-export default function Gallery({ block }) {
+const PLACEHOLDERS = Array.from(
+    { length: 6 },
+    (_, index) => ({
+        publicId: null,
+        url: null,
+        alt: `Imagem ${index + 1}`,
+        placeholder: true,
+        width: 1200,
+        height: 800,
+    })
+);
 
+export default function Gallery({ block }) {
     const { content } = block;
 
     const imagePublicIds = useMemo(
@@ -22,194 +37,697 @@ export default function Gallery({ block }) {
         [content.imagePublicIds]
     );
 
-    const [images, setImages] = useState(() => PLACEHOLDERS);
+    const layout =
+        content.layout ?? "GRID";
+
+    const columns = resolveColumns(
+        content.columns ?? 3
+    );
+
+    const gap = resolveSpacing(
+        content.gap ?? "MD"
+    );
+
+    const lightbox =
+        content.lightbox ?? true;
+
+    const [images, setImages] = useState([]);
 
     const [index, setIndex] = useState(0);
-    const [selected, setSelected] = useState(null);
+
+    const [selected, setSelected] =
+        useState(null);
+
+    /*
+     * ==========================
+     * CARREGAMENTO
+     * ==========================
+     */
 
     useEffect(() => {
-
         if (!imagePublicIds.length) {
             return;
         }
 
+        let cancelled = false;
+
         async function loadImages() {
-
             try {
+                const loadedImages =
+                    await getImagesByPublicIds(
+                        imagePublicIds
+                    );
 
-                const images = await getImagesByPublicIds(imagePublicIds);
-
-                if (images.length) {
-                    setImages(images);
-                } else {
-                    setImages(PLACEHOLDERS);
+                if (cancelled) {
+                    return;
                 }
 
-            } catch (err) {
-                console.error(err);
-                setImages(PLACEHOLDERS);
+                setImages(loadedImages);
+            } catch (error) {
+                if (cancelled) {
+                    return;
+                }
 
+                console.error(
+                    "Erro ao carregar imagens da galeria:",
+                    error
+                );
+
+                setImages([]);
             }
-
         }
 
         loadImages();
 
+        return () => {
+            cancelled = true;
+        };
     }, [imagePublicIds]);
 
-    const prev = () =>
-        setIndex((i) => (i === 0 ? images.length - 1 : i - 1));
+    /*
+     * ==========================
+     * IMAGENS EXIBIDAS
+     * ==========================
+     */
 
-    const next = () =>
-        setIndex((i) => (i === images.length - 1 ? 0 : i + 1));
+    const displayImages =
+        imagePublicIds.length && images.length
+            ? images
+            : PLACEHOLDERS;
 
-    const get = (i) => images[(i + images.length) % images.length];
+    /*
+     * ==========================
+     * ÍNDICE
+     * ==========================
+     */
 
-    const prevImg = get(index - 1);
-    const current = get(index);
-    const nextImg = get(index + 1);
+    const safeIndex =
+        index % displayImages.length;
 
-    const getLabel = (i) => {
-        return `IMG ${((i + images.length) % images.length) + 1}`;
+    /*
+     * ==========================
+     * NAVEGAÇÃO
+     * ==========================
+     */
+
+    const prev = () => {
+        setIndex(currentIndex =>
+            currentIndex === 0
+                ? displayImages.length - 1
+                : currentIndex - 1
+        );
     };
 
-    const renderImg = (img, height = 240, label = "") => {
+    const next = () => {
+        setIndex(currentIndex =>
+            currentIndex ===
+            displayImages.length - 1
+                ? 0
+                : currentIndex + 1
+        );
+    };
 
-        if (img.placeholder || !img.url) {
-            return (
-                <div
+    const getImage = position => {
+        return displayImages[
+            (position + displayImages.length) %
+                displayImages.length
+        ];
+    };
+
+    /*
+     * ==========================
+     * LIGHTBOX
+     * ==========================
+     */
+
+    const handleImageClick = image => {
+        if (
+            !lightbox ||
+            image.placeholder ||
+            !image.url
+        ) {
+            return;
+        }
+
+        setSelected(image);
+    };
+
+    /*
+     * ==========================
+     * PLACEHOLDER
+     * ==========================
+     */
+
+    const renderPlaceholder = (
+        image,
+        aspectRatio = "4 / 3"
+    ) => {
+        return (
+            <div
+                style={{
+                    width: "100%",
+                    aspectRatio,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background:
+                        theme.colors.surface,
+                    color: theme.colors.gray,
+                    fontSize: 14,
+                }}
+            >
+                {image.alt}
+            </div>
+        );
+    };
+
+    /*
+     * ==========================
+     * GRID IMAGE
+     * ==========================
+     */
+
+    const renderGridImage = image => {
+        if (
+            image.placeholder ||
+            !image.url
+        ) {
+            return renderPlaceholder(image);
+        }
+
+        return (
+            <div
+                style={{
+                    position: "relative",
+                    width: "100%",
+                    aspectRatio: "4 / 3",
+                    overflow: "hidden",
+                    background:
+                        theme.colors.surface,
+                }}
+            >
+                <Image
+                    src={image.url}
+                    alt={
+                        image.alt ||
+                        "Imagem da galeria"
+                    }
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
                     style={{
-                        width: "100%",
-                        height,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        background: theme.colors.surface,
-                        color: theme.colors.gray,
-                        fontSize: 16,
-                        fontWeight: 600,
+                        objectFit: "cover",
+                        transition:
+                            "transform .5s ease",
                     }}
-                >
-                    {label}
-                </div>
+                />
+            </div>
+        );
+    };
+
+    /*
+     * ==========================
+     * GRID
+     * ==========================
+     */
+
+    const renderGrid = () => {
+        return (
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns:
+                        `repeat(${columns}, minmax(0, 1fr))`,
+                    gap,
+                    width: "100%",
+                }}
+            >
+                {displayImages.map(
+                    (image, imageIndex) => (
+                        <button
+                            key={
+                                image.publicId ??
+                                `placeholder-${imageIndex}`
+                            }
+                            type="button"
+                            onClick={() =>
+                                handleImageClick(
+                                    image
+                                )
+                            }
+                            disabled={
+                                image.placeholder ||
+                                !lightbox
+                            }
+                            style={{
+                                display: "block",
+                                width: "100%",
+                                padding: 0,
+                                border: "none",
+                                borderRadius:
+                                    theme.radius.md,
+                                overflow: "hidden",
+                                background:
+                                    "transparent",
+                                cursor:
+                                    lightbox &&
+                                    !image.placeholder
+                                        ? "zoom-in"
+                                        : "default",
+                            }}
+                            onMouseEnter={event => {
+                                const imageElement =
+                                    event.currentTarget.querySelector(
+                                        "img"
+                                    );
+
+                                if (imageElement) {
+                                    imageElement.style.transform =
+                                        "scale(1.04)";
+                                }
+                            }}
+                            onMouseLeave={event => {
+                                const imageElement =
+                                    event.currentTarget.querySelector(
+                                        "img"
+                                    );
+
+                                if (imageElement) {
+                                    imageElement.style.transform =
+                                        "scale(1)";
+                                }
+                            }}
+                        >
+                            {renderGridImage(image)}
+                        </button>
+                    )
+                )}
+            </div>
+        );
+    };
+
+    /*
+     * ==========================
+     * MASONRY IMAGE
+     * ==========================
+     */
+
+    const renderMasonryImage = image => {
+        if (
+            image.placeholder ||
+            !image.url
+        ) {
+            return renderPlaceholder(
+                image,
+                "4 / 3"
+            );
+        }
+
+        const width = image.width || 1200;
+        const height = image.height || 800;
+
+        return (
+            <div
+                style={{
+                    position: "relative",
+                    width: "100%",
+                    overflow: "hidden",
+                    background:
+                        theme.colors.surface,
+                }}
+            >
+                <Image
+                    src={image.url}
+                    alt={
+                        image.alt ||
+                        "Imagem da galeria"
+                    }
+                    width={width}
+                    height={height}
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    style={{
+                        display: "block",
+                        width: "100%",
+                        height: "auto",
+                        transition:
+                            "transform .5s ease",
+                    }}
+                />
+            </div>
+        );
+    };
+
+    /*
+     * ==========================
+     * MASONRY
+     * ==========================
+     */
+
+    const renderMasonry = () => {
+        return (
+            <div
+                style={{
+                    columnCount: columns,
+                    columnGap: gap,
+                    width: "100%",
+                }}
+            >
+                {displayImages.map(
+                    (image, imageIndex) => (
+                        <button
+                            key={
+                                image.publicId ??
+                                `placeholder-${imageIndex}`
+                            }
+                            type="button"
+                            onClick={() =>
+                                handleImageClick(
+                                    image
+                                )
+                            }
+                            disabled={
+                                image.placeholder ||
+                                !lightbox
+                            }
+                            style={{
+                                display: "block",
+                                width: "100%",
+                                padding: 0,
+                                marginBottom: gap,
+                                border: "none",
+                                borderRadius:
+                                    theme.radius.md,
+                                overflow: "hidden",
+                                background:
+                                    "transparent",
+                                breakInside:
+                                    "avoid",
+                                cursor:
+                                    lightbox &&
+                                    !image.placeholder
+                                        ? "zoom-in"
+                                        : "default",
+                            }}
+                        >
+                            {renderMasonryImage(
+                                image
+                            )}
+                        </button>
+                    )
+                )}
+            </div>
+        );
+    };
+
+    /*
+     * ==========================
+     * SLIDER
+     * ==========================
+     */
+
+    const renderSliderImage = (
+        image,
+        height
+    ) => {
+        if (
+            image.placeholder ||
+            !image.url
+        ) {
+            return renderPlaceholder(
+                image,
+                "16 / 9"
             );
         }
 
         return (
-            <div style={{ position: "relative", width: "100%", height }}>
+            <div
+                style={{
+                    position: "relative",
+                    width: "100%",
+                    height,
+                    overflow: "hidden",
+                    background:
+                        theme.colors.surface,
+                }}
+            >
                 <Image
-                    src={img.url}
-                    alt={img.alt || "Imagem da galeria"}
+                    src={image.url}
+                    alt={
+                        image.alt ||
+                        "Imagem da galeria"
+                    }
                     fill
+                    sizes="100vw"
                     style={{
                         objectFit: "cover",
                     }}
                 />
+            </div>
+        );
+    };
 
-                {/* LABEL DE DEBUG */}
+    /*
+     * ==========================
+     * SLIDER
+     * ==========================
+     */
+
+    const renderSlider = () => {
+        const previousImage =
+            getImage(safeIndex - 1);
+
+        const currentImage =
+            getImage(safeIndex);
+
+        const nextImage =
+            getImage(safeIndex + 1);
+
+        return (
+            <div
+                style={{
+                    width: "100%",
+                }}
+            >
                 <div
                     style={{
-                        position: "absolute",
-                        top: 8,
-                        left: 8,
-                        background: "rgba(0,0,0,0.6)",
-                        color: "#fff",
-                        padding: "4px 8px",
-                        fontSize: 12,
-                        borderRadius: 6,
+                        position: "relative",
+                        width: "100%",
+                        maxWidth: 800,
+                        margin: "0 auto",
                     }}
                 >
-                    {label}
+                    <button
+                        type="button"
+                        onClick={prev}
+                        aria-label="Imagem anterior"
+                        style={{
+                            position: "absolute",
+                            left: 16,
+                            top: "50%",
+                            transform:
+                                "translateY(-50%)",
+                            zIndex: 2,
+                            width: 42,
+                            height: 42,
+                            border: "none",
+                            borderRadius: "50%",
+                            background:
+                                "rgba(0, 0, 0, .45)",
+                            color: "#fff",
+                            fontSize: 24,
+                            cursor: "pointer",
+                        }}
+                    >
+                        ‹
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() =>
+                            handleImageClick(
+                                currentImage
+                            )
+                        }
+                        disabled={
+                            currentImage.placeholder ||
+                            !lightbox
+                        }
+                        style={{
+                            display: "block",
+                            width: "100%",
+                            padding: 0,
+                            border: "none",
+                            borderRadius:
+                                theme.radius.lg,
+                            overflow: "hidden",
+                            background:
+                                "transparent",
+                            cursor:
+                                lightbox &&
+                                !currentImage.placeholder
+                                    ? "zoom-in"
+                                    : "default",
+                        }}
+                    >
+                        {renderSliderImage(
+                            currentImage,
+                            420
+                        )}
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={next}
+                        aria-label="Próxima imagem"
+                        style={{
+                            position: "absolute",
+                            right: 16,
+                            top: "50%",
+                            transform:
+                                "translateY(-50%)",
+                            zIndex: 2,
+                            width: 42,
+                            height: 42,
+                            border: "none",
+                            borderRadius: "50%",
+                            background:
+                                "rgba(0, 0, 0, .45)",
+                            color: "#fff",
+                            fontSize: 24,
+                            cursor: "pointer",
+                        }}
+                    >
+                        ›
+                    </button>
+                </div>
+
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent:
+                            "center",
+                        gap: 8,
+                        marginTop: 16,
+                    }}
+                >
+                    {displayImages.map(
+                        (image, imageIndex) => (
+                            <button
+                                key={
+                                    image.publicId ??
+                                    `dot-${imageIndex}`
+                                }
+                                type="button"
+                                onClick={() =>
+                                    setIndex(
+                                        imageIndex
+                                    )
+                                }
+                                aria-label={`Ir para imagem ${
+                                    imageIndex + 1
+                                }`}
+                                style={{
+                                    width:
+                                        imageIndex ===
+                                        safeIndex
+                                            ? 28
+                                            : 8,
+                                    height: 8,
+                                    padding: 0,
+                                    border: "none",
+                                    borderRadius:
+                                        999,
+                                    background:
+                                        imageIndex ===
+                                        safeIndex
+                                            ? theme
+                                                  .colors
+                                                  .primary
+                                            : theme
+                                                  .colors
+                                                  .border,
+                                    cursor: "pointer",
+                                    transition:
+                                        "all .2s ease",
+                                }}
+                            />
+                        )
+                    )}
                 </div>
             </div>
         );
     };
 
+    /*
+     * ==========================
+     * LAYOUT
+     * ==========================
+     */
+
+    const renderLayout = () => {
+        switch (layout) {
+            case "GRID":
+                return renderGrid();
+
+            case "MASONRY":
+                return renderMasonry();
+
+            case "SLIDER":
+                return renderSlider();
+
+            default:
+                return renderGrid();
+        }
+    };
+
+    /*
+     * ==========================
+     * RENDER
+     * ==========================
+     */
+
     return (
         <>
-            {/* CARROSSEL COM PREVIEW */}
-            <div
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: theme.spacing.md,
-                }}
-            >
+            {renderLayout()}
 
-                {/* PREV (preview menor) */}
-                <div
-                    onClick={prev}
-                    style={{
-                        width: 180,
-                        opacity: 0.5,
-                        cursor: "pointer",
-                    }}
-                >
-                    <Card style={{ padding: 0, overflow: "hidden" }}>
-                        {renderImg(prevImg, 120, getLabel(index - 1))}
-                    </Card>
-                </div>
-
-                {/* CURRENT (principal) */}
-                <div
-                    onClick={() =>
-                        !current.placeholder && setSelected(current)
-                    }
-                    style={{
-                        width: 500,
-                        cursor: "zoom-in",
-                    }}
-                >
-                    <Card style={{ padding: 0, overflow: "hidden" }}>
-                        {renderImg(current, 320, getLabel(index))}
-                    </Card>
-                </div>
-
-                {/* NEXT (preview menor) */}
-                <div
-                    onClick={next}
-                    style={{
-                        width: 180,
-                        opacity: 0.5,
-                        cursor: "pointer",
-                    }}
-                >
-                    <Card style={{ padding: 0, overflow: "hidden" }}>
-                        {renderImg(nextImg, 120, getLabel(index + 1))}
-                    </Card>
-                </div>
-
-            </div>
-
-            {/* LIGHTBOX */}
             {selected && (
                 <div
-                    onClick={() => setSelected(null)}
+                    onClick={() =>
+                        setSelected(null)
+                    }
                     style={{
                         position: "fixed",
                         inset: 0,
-                        background: "rgba(0,0,0,0.85)",
+                        zIndex: 9999,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        zIndex: 9999,
+                        padding: 24,
+                        background:
+                            "rgba(0, 0, 0, .9)",
                         cursor: "zoom-out",
-                        padding: 20,
                     }}
                 >
-                    <Image
-                        src={selected.url}
-                        alt={selected.alt || "Imagem da galeria"}
-                        width={1200}
-                        height={800}
+                    <div
                         style={{
-                            maxWidth: "90%",
-                            maxHeight: "90%",
-                            objectFit: "contain",
-                            borderRadius: theme.radius.md,
+                            position:
+                                "relative",
+                            width: "min(1200px, 92vw)",
+                            height: "90vh",
                         }}
-                    />
+                    >
+                        <Image
+                            src={selected.url}
+                            alt={
+                                selected.alt ||
+                                "Imagem da galeria"
+                            }
+                            fill
+                            sizes="92vw"
+                            style={{
+                                objectFit: "contain",
+                            }}
+                        />
+                    </div>
                 </div>
             )}
         </>
