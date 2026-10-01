@@ -7,6 +7,7 @@ import {
 } from "./styles";
 
 const defaultOptions = [
+    { value: "XS", label: "Extra pequeno", },
     { value: "SM", label: "Pequeno" },
     { value: "MD", label: "Médio" },
     { value: "LG", label: "Grande" },

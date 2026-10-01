@@ -79,6 +79,7 @@ export default function SectionPanel({ block }) {
                 value={content.gap ?? "LG"}
                 options={[
                     { value: "NONE", label: "Nenhum" },
+                    { value: "XS", label: "Extra pequeno" },
                     { value: "SM", label: "Pequeno" },
                     { value: "MD", label: "Médio" },
                     { value: "LG", label: "Grande" },

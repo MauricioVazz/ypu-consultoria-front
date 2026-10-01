@@ -2,212 +2,213 @@
 
 import { useState } from "react";
 import {
-ControlContainer,
-ControlHeader,
-ModeSelect,
-FieldsContainer,
-Field,
-FieldLabel,
-Select,
+    ControlContainer,
+    ControlHeader,
+    ModeSelect,
+    FieldsContainer,
+    Field,
+    FieldLabel,
+    Select,
 } from "./styles";
 
 const spacingOptions = [
-{ value: "NONE", label: "Nenhum" },
-{ value: "SM", label: "SM" },
-{ value: "MD", label: "MD" },
-{ value: "LG", label: "LG" },
-{ value: "XL", label: "XL" },
+    { value: "NONE", label: "Nenhum" },
+    { value: "XS", label: "Extra pequeno", },
+    { value: "SM", label: "Pequeno", },
+    { value: "MD", label: "Médio", },
+    { value: "LG", label: "Grande", },
+    { value: "XL", label: "Extra grande", },
 ];
 
 const modes = [
-{ value: "general", label: "Geral" },
-{ value: "vertical", label: "Vertical" },
-{ value: "horizontal", label: "Horizontal" },
-{ value: "sides", label: "Lados" },
+    { value: "general", label: "Geral" },
+    { value: "vertical", label: "Vertical" },
+    { value: "horizontal", label: "Horizontal" },
+    { value: "sides", label: "Lados" },
 ];
 
 export default function PaddingControl({ value = {}, onChange }) {
-const [mode, setMode] = useState("general");
+    const [mode, setMode] = useState("general");
 
-const handleChange = (field, newValue) => {
-    onChange({
-        [field]: newValue,
-    });
-};
+    const handleChange = (field, newValue) => {
+        onChange({
+            [field]: newValue,
+        });
+    };
 
-const handleModeChange = (newMode) => {
-    setMode(newMode);
-};
+    const handleModeChange = (newMode) => {
+        setMode(newMode);
+    };
 
-const renderSelect = (label, field) => (
-    <Field>
-        <FieldLabel>{label}</FieldLabel>
+    const renderSelect = (label, field) => (
+        <Field>
+            <FieldLabel>{label}</FieldLabel>
 
-        <Select
-            value={value[field] ?? "NONE"}
-            onChange={e =>
-                handleChange(field, e.target.value)
-            }
-        >
-            {spacingOptions.map(option => (
-                <option
-                    key={option.value}
-                    value={option.value}
-                >
-                    {option.label}
-                </option>
-            ))}
-        </Select>
-    </Field>
-);
-
-const handleGeneralChange = value => {
-    onChange({
-        paddingTop: value,
-        paddingRight: value,
-        paddingBottom: value,
-        paddingLeft: value,
-    });
-};
-
-const handleVerticalChange = value => {
-    onChange({
-        paddingTop: value,
-        paddingBottom: value,
-    });
-};
-
-const handleHorizontalChange = value => {
-    onChange({
-        paddingLeft: value,
-        paddingRight: value,
-    });
-};
-
-return (
-    <ControlContainer>
-        <ControlHeader>
-            <strong>Padding</strong>
-
-            <ModeSelect
-                value={mode}
+            <Select
+                value={value[field] ?? "NONE"}
                 onChange={e =>
-                    handleModeChange(e.target.value)
+                    handleChange(field, e.target.value)
                 }
             >
-                {modes.map(item => (
+                {spacingOptions.map(option => (
                     <option
-                        key={item.value}
-                        value={item.value}
+                        key={option.value}
+                        value={option.value}
                     >
-                        {item.label}
+                        {option.label}
                     </option>
                 ))}
-            </ModeSelect>
-        </ControlHeader>
+            </Select>
+        </Field>
+    );
 
-        {mode === "general" && (
-            <FieldsContainer>
-                <Field>
-                    <FieldLabel>Todos os lados</FieldLabel>
+    const handleGeneralChange = value => {
+        onChange({
+            paddingTop: value,
+            paddingRight: value,
+            paddingBottom: value,
+            paddingLeft: value,
+        });
+    };
 
-                    <Select
-                        value={value.paddingTop ?? "NONE"}
-                        onChange={e =>
-                            handleGeneralChange(
-                                e.target.value
-                            )
-                        }
-                    >
-                        {spacingOptions.map(option => (
-                            <option
-                                key={option.value}
-                                value={option.value}
-                            >
-                                {option.label}
-                            </option>
-                        ))}
-                    </Select>
-                </Field>
-            </FieldsContainer>
-        )}
+    const handleVerticalChange = value => {
+        onChange({
+            paddingTop: value,
+            paddingBottom: value,
+        });
+    };
 
-        {mode === "vertical" && (
-            <FieldsContainer>
-                <Field>
-                    <FieldLabel>Superior e inferior</FieldLabel>
+    const handleHorizontalChange = value => {
+        onChange({
+            paddingLeft: value,
+            paddingRight: value,
+        });
+    };
 
-                    <Select
-                        value={value.paddingTop ?? "NONE"}
-                        onChange={e =>
-                            handleVerticalChange(
-                                e.target.value
-                            )
-                        }
-                    >
-                        {spacingOptions.map(option => (
-                            <option
-                                key={option.value}
-                                value={option.value}
-                            >
-                                {option.label}
-                            </option>
-                        ))}
-                    </Select>
-                </Field>
-            </FieldsContainer>
-        )}
+    return (
+        <ControlContainer>
+            <ControlHeader>
+                <strong>Padding</strong>
 
-        {mode === "horizontal" && (
-            <FieldsContainer>
-                <Field>
-                    <FieldLabel>Esquerda e direita</FieldLabel>
+                <ModeSelect
+                    value={mode}
+                    onChange={e =>
+                        handleModeChange(e.target.value)
+                    }
+                >
+                    {modes.map(item => (
+                        <option
+                            key={item.value}
+                            value={item.value}
+                        >
+                            {item.label}
+                        </option>
+                    ))}
+                </ModeSelect>
+            </ControlHeader>
 
-                    <Select
-                        value={value.paddingLeft ?? "NONE"}
-                        onChange={e =>
-                            handleHorizontalChange(
-                                e.target.value
-                            )
-                        }
-                    >
-                        {spacingOptions.map(option => (
-                            <option
-                                key={option.value}
-                                value={option.value}
-                            >
-                                {option.label}
-                            </option>
-                        ))}
-                    </Select>
-                </Field>
-            </FieldsContainer>
-        )}
+            {mode === "general" && (
+                <FieldsContainer>
+                    <Field>
+                        <FieldLabel>Todos os lados</FieldLabel>
 
-        {mode === "sides" && (
-            <FieldsContainer>
-                {renderSelect(
-                    "Superior",
-                    "paddingTop"
-                )}
+                        <Select
+                            value={value.paddingTop ?? "NONE"}
+                            onChange={e =>
+                                handleGeneralChange(
+                                    e.target.value
+                                )
+                            }
+                        >
+                            {spacingOptions.map(option => (
+                                <option
+                                    key={option.value}
+                                    value={option.value}
+                                >
+                                    {option.label}
+                                </option>
+                            ))}
+                        </Select>
+                    </Field>
+                </FieldsContainer>
+            )}
 
-                {renderSelect(
-                    "Direita",
-                    "paddingRight"
-                )}
+            {mode === "vertical" && (
+                <FieldsContainer>
+                    <Field>
+                        <FieldLabel>Superior e inferior</FieldLabel>
 
-                {renderSelect(
-                    "Inferior",
-                    "paddingBottom"
-                )}
+                        <Select
+                            value={value.paddingTop ?? "NONE"}
+                            onChange={e =>
+                                handleVerticalChange(
+                                    e.target.value
+                                )
+                            }
+                        >
+                            {spacingOptions.map(option => (
+                                <option
+                                    key={option.value}
+                                    value={option.value}
+                                >
+                                    {option.label}
+                                </option>
+                            ))}
+                        </Select>
+                    </Field>
+                </FieldsContainer>
+            )}
 
-                {renderSelect(
-                    "Esquerda",
-                    "paddingLeft"
-                )}
-            </FieldsContainer>
-        )}
-    </ControlContainer>
-);
+            {mode === "horizontal" && (
+                <FieldsContainer>
+                    <Field>
+                        <FieldLabel>Esquerda e direita</FieldLabel>
+
+                        <Select
+                            value={value.paddingLeft ?? "NONE"}
+                            onChange={e =>
+                                handleHorizontalChange(
+                                    e.target.value
+                                )
+                            }
+                        >
+                            {spacingOptions.map(option => (
+                                <option
+                                    key={option.value}
+                                    value={option.value}
+                                >
+                                    {option.label}
+                                </option>
+                            ))}
+                        </Select>
+                    </Field>
+                </FieldsContainer>
+            )}
+
+            {mode === "sides" && (
+                <FieldsContainer>
+                    {renderSelect(
+                        "Superior",
+                        "paddingTop"
+                    )}
+
+                    {renderSelect(
+                        "Direita",
+                        "paddingRight"
+                    )}
+
+                    {renderSelect(
+                        "Inferior",
+                        "paddingBottom"
+                    )}
+
+                    {renderSelect(
+                        "Esquerda",
+                        "paddingLeft"
+                    )}
+                </FieldsContainer>
+            )}
+        </ControlContainer>
+    );
 
 }

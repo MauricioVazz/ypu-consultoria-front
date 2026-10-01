@@ -11,10 +11,11 @@ import {
 
 const spacingOptions = [
     { value: "NONE", label: "None" },
-    { value: "SM", label: "SM" },
-    { value: "MD", label: "MD" },
-    { value: "LG", label: "LG" },
-    { value: "XL", label: "XL" },
+    { value: "XS", label: "Extra pequeno" },
+    { value: "SM", label: "Pequeno" },
+    { value: "MD", label: "Médio" },
+    { value: "LG", label: "Grande" },
+    { value: "XL", label: "Extra grande" },
 ];
 
 export default function VerticalPaddingControl({

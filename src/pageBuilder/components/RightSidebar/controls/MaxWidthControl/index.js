@@ -7,26 +7,11 @@ import {
 } from "./styles";
 
 const defaultOptions = [
-    {
-        value: "SM",
-        label: "Pequeno",
-    },
-    {
-        value: "MD",
-        label: "Médio",
-    },
-    {
-        value: "LG",
-        label: "Grande",
-    },
-    {
-        value: "XL",
-        label: "Extra grande",
-    },
-    {
-        value: "FULL",
-        label: "Tela inteira",
-    },
+    { value: "SM", label: "Pequeno", },
+    { value: "MD", label: "Médio", },
+    { value: "LG", label: "Grande", },
+    { value: "XL", label: "Extra grande", },
+    { value: "FULL", label: "Tela inteira", },
 ];
 
 export default function MaxWidthControl({
