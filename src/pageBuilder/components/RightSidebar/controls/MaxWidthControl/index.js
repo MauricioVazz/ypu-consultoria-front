@@ -7,26 +7,47 @@ import {
 } from "./styles";
 
 const defaultOptions = [
-    { value: "SM", label: "Pequeno" },
-    { value: "MD", label: "Médio" },
-    { value: "LG", label: "Grande" },
+    {
+        value: "SM",
+        label: "Pequeno",
+    },
+    {
+        value: "MD",
+        label: "Médio",
+    },
+    {
+        value: "LG",
+        label: "Grande",
+    },
+    {
+        value: "XL",
+        label: "Extra grande",
+    },
+    {
+        value: "FULL",
+        label: "Tela inteira",
+    },
 ];
 
-export default function GapControl({
-    value = "MD",
+export default function MaxWidthControl({
+    value = "XL",
     onChange,
     options = defaultOptions,
 }) {
     return (
         <ControlContainer>
             <ControlHeader>
-                <strong>Espaçamento</strong>
+                <strong>
+                    Largura máxima
+                </strong>
             </ControlHeader>
 
             <Select
                 value={value}
                 onChange={event =>
-                    onChange(event.target.value)
+                    onChange(
+                        event.target.value
+                    )
                 }
             >
                 {options.map(option => (

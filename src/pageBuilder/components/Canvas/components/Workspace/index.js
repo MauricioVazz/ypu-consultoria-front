@@ -31,8 +31,14 @@ export default function Workspace() {
 
         const updateScale = () => {
 
+            const horizontalPadding =
+                viewport === "desktopFullHD"
+                    ? 64
+                    : 144;
+
             const availableWidth =
-                container.clientWidth - 96;
+                container.clientWidth -
+                horizontalPadding;
 
             const nextScale =
                 Math.min(
@@ -54,19 +60,22 @@ export default function Workspace() {
             observer.disconnect();
         };
 
-    }, [pageWidth]);
+    }, [pageWidth, viewport]);
 
     return (
-        <WorkspaceContainer ref={containerRef}>
+        <WorkspaceContainer
+            ref={containerRef}
+            $isFullHD={viewport === "desktopFullHD"}
+        >
 
             <PageViewport
-                $scale={scale}
+                $width={pageWidth}
                 $pageWidth={pageWidth}
             >
                 <PageFrame $scale={scale}>
 
                     <Page />
-                
+
                 </PageFrame>
 
             </PageViewport>

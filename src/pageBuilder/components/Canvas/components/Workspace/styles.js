@@ -4,19 +4,20 @@ import styled from "styled-components";
 
 export const WorkspaceContainer = styled.div`
     flex: 1;
-
     min-width: 0;
     min-height: 0;
 
     display: flex;
-
     justify-content: center;
     align-items: flex-start;
 
     overflow-y: auto;
     overflow-x: hidden;
 
-    padding: 48px 72px;
+    padding: ${({ $isFullHD }) =>
+        $isFullHD
+            ? "32px"
+            : "48px 72px"};
 
     background: ${({ theme }) =>
         theme.colors.surface};

@@ -7,20 +7,33 @@ import {
 } from "./styles";
 
 const defaultOptions = [
-    { value: "SM", label: "Pequeno" },
-    { value: "MD", label: "Médio" },
-    { value: "LG", label: "Grande" },
+    {
+        value: "DEFAULT",
+        label: "Padrão",
+    },
+    {
+        value: "PRIMARY",
+        label: "Primária",
+    },
+    {
+        value: "GREEN",
+        label: "Verde",
+    },
+    {
+        value: "DARK",
+        label: "Escuro",
+    },
 ];
 
-export default function GapControl({
-    value = "MD",
+export default function BackgroundControl({
+    value = "DEFAULT",
     onChange,
     options = defaultOptions,
 }) {
     return (
         <ControlContainer>
             <ControlHeader>
-                <strong>Espaçamento</strong>
+                <strong>Fundo</strong>
             </ControlHeader>
 
             <Select

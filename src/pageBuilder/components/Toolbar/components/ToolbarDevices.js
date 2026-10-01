@@ -4,6 +4,10 @@ import useBuilderStore from "@/pageBuilder/store/builderStore";
 
 const devices = [
     {
+        id: "desktopFullHD",
+        label: "Desktop Full HD",
+    },
+    {
         id: "desktop",
         label: "Desktop",
     },

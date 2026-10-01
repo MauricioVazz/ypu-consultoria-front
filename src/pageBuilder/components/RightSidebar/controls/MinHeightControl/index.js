@@ -7,20 +7,22 @@ import {
 } from "./styles";
 
 const defaultOptions = [
-    { value: "SM", label: "Pequeno" },
-    { value: "MD", label: "Médio" },
+    { value: "AUTO", label: "Automática" },
+    { value: "SM", label: "Pequena" },
+    { value: "MD", label: "Média" },
     { value: "LG", label: "Grande" },
+    { value: "FULL", label: "Tela inteira" },
 ];
 
-export default function GapControl({
-    value = "MD",
+export default function MinHeightControl({
+    value = "AUTO",
     onChange,
     options = defaultOptions,
 }) {
     return (
         <ControlContainer>
             <ControlHeader>
-                <strong>Espaçamento</strong>
+                <strong>Altura mínima</strong>
             </ControlHeader>
 
             <Select
