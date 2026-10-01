@@ -1,116 +1,89 @@
 import styled from "styled-components";
 
-export const PanelContainer = styled.div`    display: flex;
+export const PanelContainer = styled.div`
+    display: flex;
     flex-direction: column;
-    gap: 16px;`;
 
-export const PanelHeader = styled.div`    display: flex;
+    gap: ${({ theme }) =>
+        theme.spacing.md};
+
+    width: 100%;
+`;
+
+export const PanelHeader = styled.div`
+    display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;`;
+
+    gap: ${({ theme }) =>
+        theme.spacing.sm};
+`;
 
 export const PanelTitle = styled.h3`
-margin: 0;
+    margin: 0;
 
-font-size: 16px;
-font-weight: 600;
-
-color: ${({ theme }) =>
+    color: ${({ theme }) =>
         theme.colors.text};
 
+    font-size: ${({ theme }) =>
+        theme.typography.fontSize.h5};
+
+    font-weight: ${({ theme }) =>
+        theme.typography.fontWeight.semibold};
 `;
 
-export const SaveButton = styled.button`
-padding: 6px 12px;
-
-border: 1px solid ${({ theme }) =>
-        theme.colors.primary};
-
-border-radius: ${({ theme }) =>
-        theme.radius.sm};
-
-background: ${({ theme }) =>
-        theme.colors.primary};
-
-color: ${({ theme }) =>
-        theme.colors.white};
-
-font-family: inherit;
-font-size: 12px;
-font-weight: 500;
-
-cursor: pointer;
-
-transition:
-    background ${({ theme }) =>
-        theme.transition.fast},
-    border-color ${({ theme }) =>
-        theme.transition.fast};
-
-&:hover:not(:disabled) {
-    background: ${({ theme }) =>
-        theme.colors.green};
-
-    border-color: ${({ theme }) =>
-        theme.colors.green};
-}
-
-&:disabled {
-    background: ${({ theme }) =>
-        theme.colors.surface};
-
-    border-color: ${({ theme }) =>
-        theme.colors.border};
+export const ErrorMessage = styled.span`
+    font-size: ${({ theme }) =>
+        theme.typography.fontSize.small};
 
     color: ${({ theme }) =>
-        theme.colors.gray};
-
-    cursor: not-allowed;
-}
-
+        theme.colors.danger};
 `;
 
-export const ErrorMessage = styled.span`    font-size: 12px;
-    color: ${({ theme }) =>
-        theme.colors.danger};`;
-
-export const DebugSection = styled.div`    display: flex;
+export const DebugSection = styled.div`
+    display: flex;
     flex-direction: column;
-    gap: 8px;`;
+
+    gap: ${({ theme }) =>
+        theme.spacing.xs};
+`;
 
 export const DebugTitle = styled.h4`
-margin: 0;
+    margin: 0;
 
-font-size: 13px;
-font-weight: 600;
+    font-size: ${({ theme }) =>
+        theme.typography.fontSize.small};
 
-color: ${({ theme }) =>
+    font-weight: ${({ theme }) =>
+        theme.typography.fontWeight.semibold};
+
+    color: ${({ theme }) =>
         theme.colors.text};
-
 `;
 
 export const DebugContent = styled.pre`
-margin: 0;
-padding: 8px;
+    margin: 0;
 
+    padding: ${({ theme }) =>
+        theme.spacing.xs};
 
-border: 1px solid ${({ theme }) =>
+    border: 1px solid ${({ theme }) =>
         theme.colors.border};
 
-border-radius: ${({ theme }) =>
+    border-radius: ${({ theme }) =>
         theme.radius.sm};
 
-background: ${({ theme }) =>
+    background: ${({ theme }) =>
         theme.colors.canvas};
 
-color: ${({ theme }) =>
+    color: ${({ theme }) =>
         theme.colors.gray};
 
-font-family: monospace;
-font-size: 11px;
+    font-family: monospace;
+    font-size: 11px;
 
-overflow-x: auto;
-white-space: pre-wrap;
-word-break: break-word;
+    overflow-x: auto;
 
+    white-space: pre-wrap;
+    word-break: break-word;
 `;

@@ -3,7 +3,10 @@ import styled from "styled-components";
 export const PanelContainer = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 16px;
+
+    gap: ${({ theme }) =>
+        theme.spacing.md};
+
     width: 100%;
 `;
 
@@ -11,98 +14,75 @@ export const PanelHeader = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+
+    gap: ${({ theme }) =>
+        theme.spacing.sm};
 `;
 
 export const PanelTitle = styled.h3`
     margin: 0;
-    font-size: 16px;
-    font-weight: 600;
+
     color: ${({ theme }) =>
-        theme.colors?.text ?? "#1E1E1E"};
+        theme.colors.text};
+
+    font-size: ${({ theme }) =>
+        theme.typography.fontSize.h5};
+
+    font-weight: ${({ theme }) =>
+        theme.typography.fontWeight.semibold};
 `;
 
-export const SaveButton = styled.button`
-    border: none;
-    border-radius: 6px;
-    padding: 7px 12px;
-
-    font-size: 13px;
-    font-weight: 500;
-
-    cursor: ${({ disabled }) =>
-        disabled ? "not-allowed" : "pointer"};
+export const ErrorMessage = styled.span`
+    font-size: ${({ theme }) =>
+        theme.typography.fontSize.small};
 
     color: ${({ theme }) =>
-        theme.colors?.white ?? "#FFFFFF"};
-
-    background: ${({ theme, disabled }) =>
-        disabled
-            ? theme.colors?.gray ?? "#A0A0A0"
-            : theme.colors?.primary ?? "#227F66"};
-
-    opacity: ${({ disabled }) =>
-        disabled ? 0.6 : 1};
-
-    transition:
-        background 0.2s ease,
-        opacity 0.2s ease;
-
-    &:hover:not(:disabled) {
-        background: ${({ theme }) =>
-            theme.colors?.darkGreen ?? "#1D473A"};
-    }
-`;
-
-export const ErrorMessage = styled.p`
-    margin: -6px 0 0;
-
-    font-size: 12px;
-    line-height: 1.4;
-
-    color: ${({ theme }) =>
-        theme.colors?.danger ?? "#C44545"};
+        theme.colors.danger};
 `;
 
 export const DebugSection = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 8px;
 
-    margin-top: 8px;
-    padding-top: 16px;
-
-    border-top: 1px solid
-        ${({ theme }) =>
-            theme.colors?.border ?? "#E5E5E5"};
+    gap: ${({ theme }) =>
+        theme.spacing.xs};
 `;
 
 export const DebugTitle = styled.h4`
     margin: 0;
 
-    font-size: 12px;
-    font-weight: 600;
+    font-size: ${({ theme }) =>
+        theme.typography.fontSize.small};
+
+    font-weight: ${({ theme }) =>
+        theme.typography.fontWeight.semibold};
 
     color: ${({ theme }) =>
-        theme.colors?.text ?? "#1E1E1E"};
+        theme.colors.text};
 `;
 
 export const DebugContent = styled.pre`
     margin: 0;
-    padding: 10px;
 
-    max-width: 100%;
-    overflow-x: auto;
+    padding: ${({ theme }) =>
+        theme.spacing.xs};
 
-    border-radius: 6px;
+    border: 1px solid ${({ theme }) =>
+        theme.colors.border};
+
+    border-radius: ${({ theme }) =>
+        theme.radius.sm};
 
     background: ${({ theme }) =>
-        theme.colors?.background ?? "#F5F5F2"};
+        theme.colors.canvas};
 
-    font-size: 11px;
-    line-height: 1.5;
     color: ${({ theme }) =>
-        theme.colors?.gray ?? "#2E3634"};
+        theme.colors.gray};
+
+    font-family: monospace;
+    font-size: 11px;
+
+    overflow-x: auto;
 
     white-space: pre-wrap;
     word-break: break-word;

@@ -1,159 +1,195 @@
 "use client";
 
-import { useState } from "react";
-
 import useBuilderStore from "@/pageBuilder/store/builderStore";
+import useBlockSave from "@/pageBuilder/hooks/useBlockSave";
+
+import SaveButton from "@/pageBuilder/components/SaveButton";
 
 import {
-PanelContainer,
-PanelHeader,
-PanelTitle,
-SaveButton,
-ErrorMessage,
-DebugSection,
-DebugTitle,
-DebugContent,
+    PanelContainer,
+    PanelHeader,
+    PanelTitle,
+    ErrorMessage,
+    DebugSection,
+    DebugTitle,
+    DebugContent,
 } from "./styles";
 
 import {
-PaddingControl,
-TextControl,
-TypographyControl,
-FontWeightControl,
-TextAlignControl,
-ColorControl,
+    PaddingControl,
+    TextControl,
+    TypographyControl,
+    FontWeightControl,
+    TextAlignControl,
+    ColorControl,
 } from "../../controls";
 
 export default function TitlePanel({ block }) {
 
-const updateBlock = useBuilderStore(
-    state => state.updateBlock
-);
+    const updateBlock = useBuilderStore(
+        state => state.updateBlock
+    );
 
-const saveBlock = useBuilderStore(
-    state => state.saveBlock
-);
+    const {
+        isDirty,
+        saving,
+        saveError,
+        handleSave,
+    } = useBlockSave(block.publicId);
 
-const dirtyBlocks = useBuilderStore(
-    state => state.dirtyBlocks
-);
+    const { content } = block;
 
-const isDirty = dirtyBlocks.includes(
-    block.publicId
-);
+    const handleChange = (field, value) => {
+        updateBlock(
+            block.publicId,
+            {
+                [field]: value,
+            }
+        );
+    };
 
-const [saving, setSaving] = useState(false);
-const [saveError, setSaveError] = useState(false);
+    const handlePaddingChange = changes => {
+        updateBlock(
+            block.publicId,
+            changes
+        );
+    };
 
-const { content } = block;
+    return (
+        <PanelContainer>
 
-const handleSave = async () => {
-    setSaving(true);
-    setSaveError(false);
+            <PanelHeader>
 
-    try {
-        await saveBlock(block.publicId);
-    } catch (error) {
-        setSaveError(true);
-    } finally {
-        setSaving(false);
-    }
-};
+                <PanelTitle>
+                    Título
+                </PanelTitle>
 
-const handleChange = (field, value) => {
-    updateBlock(block.publicId, {
-        [field]: value,
-    });
-};
+                <SaveButton
+                    disabled={!isDirty || saving}
+                    saving={saving}
+                    saveError={saveError}
+                    onClick={handleSave}
+                />
 
-const handlePaddingChange = changes => {
-    updateBlock(block.publicId, changes);
-};
+            </PanelHeader>
 
-return (
-    <PanelContainer>
+            {saveError && (
+                <ErrorMessage>
+                    Não foi possível salvar
+                    as alterações.
+                </ErrorMessage>
+            )}
 
-        <PanelHeader>
-            <PanelTitle>Título</PanelTitle>
-
-            <SaveButton
-                type="button"
-                disabled={!isDirty || saving}
-                onClick={handleSave}
-            >
-                {saving
-                    ? "Salvando..."
-                    : saveError
-                        ? "Tentar novamente"
-                        : "Salvar"
+            <TextControl
+                label="Texto"
+                value={
+                    content.text ?? ""
                 }
-            </SaveButton>
-        </PanelHeader>
+                onChange={value =>
+                    handleChange(
+                        "text",
+                        value
+                    )
+                }
+            />
 
-        {saveError && (
-            <ErrorMessage>
-                Não foi possível salvar as alterações.
-            </ErrorMessage>
-        )}
+            <TypographyControl
+                label="Nível"
+                value={
+                    content.level ?? "H1"
+                }
+                options={[
+                    {
+                        value: "H1",
+                        label: "H1",
+                    },
+                    {
+                        value: "H2",
+                        label: "H2",
+                    },
+                    {
+                        value: "H3",
+                        label: "H3",
+                    },
+                    {
+                        value: "H4",
+                        label: "H4",
+                    },
+                    {
+                        value: "H5",
+                        label: "H5",
+                    },
+                ]}
+                onChange={value =>
+                    handleChange(
+                        "level",
+                        value
+                    )
+                }
+            />
 
-        <TextControl
-            label="Texto"
-            value={content.text ?? ""}
-            onChange={value =>
-                handleChange("text", value)
-            }
-        />
+            <FontWeightControl
+                value={
+                    content.fontWeight ??
+                    "SEMIBOLD"
+                }
+                onChange={value =>
+                    handleChange(
+                        "fontWeight",
+                        value
+                    )
+                }
+            />
 
-        <TypographyControl
-            label="Nível"
-            value={content.level ?? "H1"}
-            options={[
-                { value: "H1", label: "H1" },
-                { value: "H2", label: "H2" },
-                { value: "H3", label: "H3" },
-                { value: "H4", label: "H4" },
-                { value: "H5", label: "H5" },
-            ]}
-            onChange={value =>
-                handleChange("level", value)
-            }
-        />
+            <ColorControl
+                value={
+                    content.color ??
+                    "DEFAULT"
+                }
+                onChange={value =>
+                    handleChange(
+                        "color",
+                        value
+                    )
+                }
+            />
 
-        <FontWeightControl
-            value={content.fontWeight ?? "SEMIBOLD"}
-            onChange={value =>
-                handleChange("fontWeight", value)
-            }
-        />
+            <TextAlignControl
+                value={
+                    content.align ??
+                    "LEFT"
+                }
+                onChange={value =>
+                    handleChange(
+                        "align",
+                        value
+                    )
+                }
+            />
 
-        <ColorControl
-            value={content.color ?? "DEFAULT"}
-            onChange={value =>
-                handleChange("color", value)
-            }
-        />
+            <PaddingControl
+                value={content}
+                onChange={
+                    handlePaddingChange
+                }
+            />
 
-        <TextAlignControl
-            value={content.align ?? "LEFT"}
-            onChange={value =>
-                handleChange("align", value)
-            }
-        />
+            <DebugSection>
 
-        <PaddingControl
-            value={content}
-            onChange={handlePaddingChange}
-        />
+                <DebugTitle>
+                    Dados do bloco
+                </DebugTitle>
 
-        <DebugSection>
-            <DebugTitle>Dados do bloco</DebugTitle>
+                <DebugContent>
+                    {JSON.stringify(
+                        content,
+                        null,
+                        2
+                    )}
+                </DebugContent>
 
-            <DebugContent>
-                {JSON.stringify(content, null, 2)}
-            </DebugContent>
-        </DebugSection>
+            </DebugSection>
 
-    </PanelContainer>
-);
-
+        </PanelContainer>
+    );
 }

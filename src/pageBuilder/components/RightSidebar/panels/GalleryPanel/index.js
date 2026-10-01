@@ -3,24 +3,26 @@
 import { useEffect, useState } from "react";
 
 import useBuilderStore from "@/pageBuilder/store/builderStore";
+import useBlockSave from "@/pageBuilder/hooks/useBlockSave";
 
-import {
-    getLibraryByProject,
-} from "@/services/media";
-
+import SaveButton from "@/pageBuilder/components/SaveButton";
 import MediaPicker from "@/pageBuilder/components/MediaPicker";
 
 import {
     PanelContainer,
     PanelHeader,
     PanelTitle,
-    SaveButton,
+    ErrorMessage,
     Section,
     SectionTitle,
     DebugSection,
     DebugTitle,
     DebugContent,
 } from "./styles";
+
+import {
+    getLibraryByProject,
+} from "@/services/media";
 
 import {
     ImageUpload,
@@ -31,14 +33,6 @@ import {
 } from "../../controls";
 
 export default function GalleryPanel({ block }) {
-    const dirtyBlocks = useBuilderStore(
-        state => state.dirtyBlocks
-    );
-
-    const saveBlock = useBuilderStore(
-        state => state.saveBlock
-    );
-
     const projectPublicId = useBuilderStore(
         state => state.projectPublicId
     );
@@ -47,9 +41,12 @@ export default function GalleryPanel({ block }) {
         state => state.updateBlock
     );
 
-    const isDirty = dirtyBlocks.includes(
-        block.publicId
-    );
+    const {
+        isDirty,
+        saving,
+        saveError,
+        handleSave,
+    } = useBlockSave(block.publicId);
 
     const [isMediaPickerOpen, setIsMediaPickerOpen] =
         useState(false);
@@ -57,23 +54,48 @@ export default function GalleryPanel({ block }) {
     const [libraryPublicId, setLibraryPublicId] =
         useState(null);
 
-    const handleSave = async () => {
-        try {
-            await saveBlock(block.publicId);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    const imagePublicIds =
+        block.content?.imagePublicIds ?? [];
 
-    const handleConfirm = imagePublicIds => {
+    const handleChange = (field, value) => {
         updateBlock(
             block.publicId,
             {
-                imagePublicIds,
+                [field]: value,
             }
+        );
+    };
+
+    const handleConfirm = imagePublicIds => {
+        if (!imagePublicIds) {
+            return;
+        }
+
+        handleChange(
+            "imagePublicIds",
+            imagePublicIds
         );
 
         setIsMediaPickerOpen(false);
+    };
+
+    const handleUploadComplete = uploadedImages => {
+        if (!uploadedImages?.length) {
+            return;
+        }
+
+        const uploadedPublicIds =
+            uploadedImages.map(
+                image => image.publicId
+            );
+
+        handleChange(
+            "imagePublicIds",
+            [
+                ...imagePublicIds,
+                ...uploadedPublicIds,
+            ]
+        );
     };
 
     useEffect(() => {
@@ -102,9 +124,6 @@ export default function GalleryPanel({ block }) {
         loadLibrary();
     }, [projectPublicId]);
 
-    const imagePublicIds =
-        block.content?.imagePublicIds ?? [];
-
     return (
         <PanelContainer>
             <PanelHeader>
@@ -113,13 +132,19 @@ export default function GalleryPanel({ block }) {
                 </PanelTitle>
 
                 <SaveButton
-                    type="button"
-                    disabled={!isDirty}
+                    disabled={!isDirty || saving}
+                    saving={saving}
+                    saveError={saveError}
                     onClick={handleSave}
-                >
-                    Salvar
-                </SaveButton>
+                />
             </PanelHeader>
+
+            {saveError && (
+                <ErrorMessage>
+                    Não foi possível salvar
+                    as alterações.
+                </ErrorMessage>
+            )}
 
             <Section>
                 <SectionTitle>
@@ -127,14 +152,13 @@ export default function GalleryPanel({ block }) {
                 </SectionTitle>
 
                 <ImageUpload
-                    libraryPublicId={libraryPublicId}
+                    libraryPublicId={
+                        libraryPublicId
+                    }
                     multiple={true}
-                    onUploadComplete={uploadedImages => {
-                        console.log(
-                            "Imagens enviadas:",
-                            uploadedImages
-                        );
-                    }}
+                    onUploadComplete={
+                        handleUploadComplete
+                    }
                 />
 
                 <button
@@ -153,7 +177,9 @@ export default function GalleryPanel({ block }) {
                             setIsMediaPickerOpen(false)
                         }
                         onConfirm={handleConfirm}
-                        libraryPublicId={libraryPublicId}
+                        libraryPublicId={
+                            libraryPublicId
+                        }
                         multiple={true}
                         initialSelectedImagePublicIds={
                             imagePublicIds
@@ -168,41 +194,58 @@ export default function GalleryPanel({ block }) {
                 </SectionTitle>
 
                 <LayoutControl
-                    value={block.content?.layout ?? "GRID"}
+                    value={
+                        block.content?.layout ??
+                        "GRID"
+                    }
                     onChange={value =>
-                        updateBlock(block.publicId, {
-                            layout: value,
-                        })
+                        handleChange(
+                            "layout",
+                            value
+                        )
                     }
                 />
 
                 <ColumnsControl
-                    value={block.content?.columns ?? 3}
+                    value={
+                        block.content?.columns ??
+                        3
+                    }
                     disabled={
-                        block.content?.layout === "SLIDER"
+                        block.content?.layout ===
+                        "SLIDER"
                     }
                     onChange={value =>
-                        updateBlock(block.publicId, {
-                            columns: value,
-                        })
+                        handleChange(
+                            "columns",
+                            value
+                        )
                     }
                 />
 
                 <GapControl
-                    value={block.content?.gap ?? "MD"}
+                    value={
+                        block.content?.gap ??
+                        "MD"
+                    }
                     onChange={value =>
-                        updateBlock(block.publicId, {
-                            gap: value,
-                        })
+                        handleChange(
+                            "gap",
+                            value
+                        )
                     }
                 />
 
                 <LightboxControl
-                    value={block.content?.lightbox ?? true}
+                    value={
+                        block.content?.lightbox ??
+                        true
+                    }
                     onChange={value =>
-                        updateBlock(block.publicId, {
-                            lightbox: value,
-                        })
+                        handleChange(
+                            "lightbox",
+                            value
+                        )
                     }
                 />
             </Section>
@@ -213,16 +256,13 @@ export default function GalleryPanel({ block }) {
                 </DebugTitle>
 
                 <DebugContent>
-                    <pre>
-                        {JSON.stringify(
-                            block.content,
-                            null,
-                            2
-                        )}
-                    </pre>
+                    {JSON.stringify(
+                        block.content,
+                        null,
+                        2
+                    )}
                 </DebugContent>
             </DebugSection>
         </PanelContainer>
     );
-
 }

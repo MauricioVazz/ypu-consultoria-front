@@ -1,88 +1,111 @@
 import styled from "styled-components";
 
-export const PanelContainer = styled.div`  display: flex;
-  flex-direction: column;
-  gap: 20px;`;
+export const PanelContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: ${({ theme }) =>
+        theme.spacing.md};
 
-export const PanelHeader = styled.div`  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;`;
+    width: 100%;
+`;
+
+export const PanelHeader = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: ${({ theme }) =>
+        theme.spacing.sm};
+`;
 
 export const PanelTitle = styled.h3`
-margin: 0;
+    margin: 0;
 
-font-size: 16px;
-font-weight: 600;
-color: ${({ theme }) => theme.colors.text};
+    color: ${({ theme }) =>
+        theme.colors.text};
+
+    font-size: ${({ theme }) =>
+        theme.typography.fontSize.h5};
+
+    font-weight: ${({ theme }) =>
+        theme.typography.fontWeight.semibold};
 `;
 
-export const SaveButton = styled.button`
-padding: 8px 14px;
+export const ErrorMessage = styled.span`
+    font-size: ${({ theme }) =>
+        theme.typography.fontSize.small};
 
-border: 1px solid ${({ theme }) => theme.colors.primary};
-border-radius: ${({ theme }) => theme.radius.sm};
-
-background: ${({ theme }) => theme.colors.primary};
-color: ${({ theme }) => theme.colors.white};
-
-font-size: 13px;
-font-weight: 500;
-
-cursor: pointer;
-
-transition: ${({ theme }) => theme.transition.fast};
-
-&:hover:not(:disabled) {
-opacity: 0.9;
-}
-
-&:disabled {
-opacity: 0.5;
-cursor: not-allowed;
-}
+    color: ${({ theme }) =>
+        theme.colors.danger};
 `;
 
-export const Section = styled.section`  display: flex;
-  flex-direction: column;
-  gap: 12px;`;
+export const Section = styled.section`
+    display: flex;
+    flex-direction: column;
+
+    gap: ${({ theme }) =>
+        theme.spacing.sm};
+`;
 
 export const SectionTitle = styled.h4`
-margin: 0;
+    margin: 0;
 
-font-size: 14px;
-font-weight: 600;
-color: ${({ theme }) => theme.colors.text};
+    color: ${({ theme }) =>
+        theme.colors.text};
+
+    font-size: ${({ theme }) =>
+        theme.typography.fontSize.small};
+
+    font-weight: ${({ theme }) =>
+        theme.typography.fontWeight.semibold};
 `;
 
-export const DebugSection = styled.section`  display: flex;
-  flex-direction: column;
-  gap: 8px;`;
+export const DebugSection = styled.div`
+    display: flex;
+    flex-direction: column;
+
+    gap: ${({ theme }) =>
+        theme.spacing.xs};
+`;
 
 export const DebugTitle = styled.h4`
-margin: 0;
+    margin: 0;
 
-font-size: 13px;
-font-weight: 600;
-color: ${({ theme }) => theme.colors.gray};
+    color: ${({ theme }) =>
+        theme.colors.text};
+
+    font-size: ${({ theme }) =>
+        theme.typography.fontSize.small};
+
+    font-weight: ${({ theme }) =>
+        theme.typography.fontWeight.semibold};
 `;
 
-export const DebugContent = styled.div`
-padding: 12px;
+export const DebugContent = styled.pre`
+    margin: 0;
 
-border: 1px solid ${({ theme }) => theme.colors.border};
-border-radius: ${({ theme }) => theme.radius.sm};
+    padding: ${({ theme }) =>
+        theme.spacing.sm};
 
-background: ${({ theme }) => theme.colors.canvas};
+    overflow-x: auto;
 
-overflow-x: auto;
+    border: 1px solid
+        ${({ theme }) =>
+            theme.colors.border};
 
-pre {
-margin: 0;
+    border-radius: ${({ theme }) =>
+        theme.radius.sm};
 
-font-size: 11px;
-line-height: 1.5;
-color: ${({ theme }) => theme.colors.text};
+    background: ${({ theme }) =>
+        theme.colors.canvas};
 
-}
+    color: ${({ theme }) =>
+        theme.colors.gray};
+
+    font-family: monospace;
+    font-size: 11px;
+    line-height: 1.5;
+
+    white-space: pre-wrap;
+    word-break: break-word;
 `;

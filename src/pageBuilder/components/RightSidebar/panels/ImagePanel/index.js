@@ -3,21 +3,18 @@
 import { useEffect, useState } from "react";
 
 import useBuilderStore from "@/pageBuilder/store/builderStore";
+import useBlockSave from "@/pageBuilder/hooks/useBlockSave";
+
+import SaveButton from "@/pageBuilder/components/SaveButton";
+import MediaPicker from "@/pageBuilder/components/MediaPicker";
 
 import {
     PanelContainer,
     PanelHeader,
     PanelTitle,
-    SaveButton,
     ErrorMessage,
     Section,
     SectionTitle,
-    ImageGrid,
-    ImageOption,
-    ImagePreview,
-    EmptyMessage,
-    SelectedLabel,
-    LoadingMessage,
     Divider,
     DebugSection,
     DebugTitle,
@@ -26,7 +23,6 @@ import {
 
 import {
     getLibraryByProject,
-    getLibraryImages,
 } from "@/services/media";
 
 import {
@@ -39,53 +35,30 @@ import {
     ImageUpload,
 } from "../../controls";
 
-import MediaPicker from "@/pageBuilder/components/MediaPicker";
-
 export default function ImagePanel({ block }) {
+
     const updateBlock = useBuilderStore(
-        (state) => state.updateBlock
-    );
-
-    const saveBlock = useBuilderStore(
-        (state) => state.saveBlock
-    );
-
-    const dirtyBlocks = useBuilderStore(
-        (state) => state.dirtyBlocks
+        state => state.updateBlock
     );
 
     const projectPublicId = useBuilderStore(
         state => state.projectPublicId
     );
 
-    const isDirty = dirtyBlocks.includes(
-        block.publicId
-    );
+    const {
+        isDirty,
+        saving,
+        saveError,
+        handleSave,
+    } = useBlockSave(block.publicId);
 
-    const [saving, setSaving] = useState(false);
-    const [saveError, setSaveError] = useState(false);
+    const [isMediaPickerOpen, setIsMediaPickerOpen] =
+        useState(false);
 
-    const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
-
-    const [images, setImages] = useState([]);
-    const [loadingImages, setLoadingImages] = useState(true);
-    const [imageError, setImageError] = useState(false);
-    const [libraryPublicId, setLibraryPublicId] = useState(null);
+    const [libraryPublicId, setLibraryPublicId] =
+        useState(null);
 
     const { content } = block;
-
-    const handleSave = async () => {
-        setSaving(true);
-        setSaveError(false);
-
-        try {
-            await saveBlock(block.publicId);
-        } catch (error) {
-            setSaveError(true);
-        } finally {
-            setSaving(false);
-        }
-    };
 
     const handleChange = (field, value) => {
         updateBlock(
@@ -97,6 +70,7 @@ export default function ImagePanel({ block }) {
     };
 
     const handleConfirm = publicId => {
+
         if (!publicId) {
             return;
         }
@@ -115,10 +89,7 @@ export default function ImagePanel({ block }) {
             return;
         }
 
-        async function loadImages() {
-
-            setLoadingImages(true);
-            setImageError(false);
+        async function loadLibrary() {
 
             try {
 
@@ -127,72 +98,61 @@ export default function ImagePanel({ block }) {
                         projectPublicId
                     );
 
-                setLibraryPublicId(library.publicId);
-
-                const libraryImages =
-                    await getLibraryImages(
-                        library.publicId
-                    );
-
-                setImages(libraryImages);
+                setLibraryPublicId(
+                    library.publicId
+                );
 
             } catch (error) {
 
                 console.error(
-                    "Erro ao carregar imagens:",
+                    "Erro ao carregar biblioteca:",
                     error
                 );
-
-                setImageError(true);
-                setImages([]);
-
-            } finally {
-
-                setLoadingImages(false);
 
             }
 
         }
 
-        loadImages();
+        loadLibrary();
 
     }, [projectPublicId]);
 
     return (
         <PanelContainer>
+
             <PanelHeader>
+
                 <PanelTitle>
                     Imagem
                 </PanelTitle>
 
                 <SaveButton
-                    type="button"
                     disabled={!isDirty || saving}
+                    saving={saving}
+                    saveError={saveError}
                     onClick={handleSave}
-                >
-                    {saving
-                        ? "Salvando..."
-                        : saveError
-                            ? "Tentar novamente"
-                            : "Salvar"
-                    }
-                </SaveButton>
+                />
+
             </PanelHeader>
 
             {saveError && (
                 <ErrorMessage>
-                    Não foi possível salvar as alterações.
+                    Não foi possível salvar
+                    as alterações.
                 </ErrorMessage>
             )}
 
             <Section>
+
                 <SectionTitle>
                     Selecionar imagem
                 </SectionTitle>
 
                 <button
                     type="button"
-                    onClick={() => setIsMediaPickerOpen(true)}
+                    onClick={() =>
+                        setIsMediaPickerOpen(true)
+                    }
                 >
                     Escolher imagem
                 </button>
@@ -200,124 +160,60 @@ export default function ImagePanel({ block }) {
                 {isMediaPickerOpen && (
                     <MediaPicker
                         open={true}
-                        onClose={() => setIsMediaPickerOpen(false)}
+                        onClose={() =>
+                            setIsMediaPickerOpen(false)
+                        }
                         onConfirm={handleConfirm}
-                        libraryPublicId={libraryPublicId}
-                        initialSelectedImagePublicId={content.imagePublicId}
+                        libraryPublicId={
+                            libraryPublicId
+                        }
+                        initialSelectedImagePublicId={
+                            content.imagePublicId
+                        }
                     />
                 )}
 
                 <ImageUpload
-                    libraryPublicId={libraryPublicId}
+                    libraryPublicId={
+                        libraryPublicId
+                    }
                     multiple={false}
-                    onUploadComplete={uploadedImages => {
-                        if (!uploadedImages.length) {
-                            return;
+                    onUploadComplete={
+                        uploadedImages => {
+
+                            if (
+                                !uploadedImages.length
+                            ) {
+                                return;
+                            }
+
+                            const uploadedImage =
+                                uploadedImages[0];
+
+                            handleChange(
+                                "imagePublicId",
+                                uploadedImage.publicId
+                            );
                         }
-
-                        const uploadedImage = uploadedImages[0];
-
-                        setImages(currentImages => [
-                            ...currentImages,
-                            uploadedImage,
-                        ]);
-
-                        handleChange(
-                            "imagePublicId",
-                            uploadedImage.publicId
-                        );
-                    }}
+                    }
                 />
-
-                {loadingImages && (
-                    <LoadingMessage>
-                        Carregando imagens...
-                    </LoadingMessage>
-                )}
-
-                {!loadingImages &&
-                    imageError && (
-                        <ErrorMessage>
-                            Não foi possível carregar
-                            as imagens da biblioteca.
-                        </ErrorMessage>
-                    )}
-
-                {!loadingImages &&
-                    !imageError &&
-                    !projectPublicId && (
-                        <EmptyMessage>
-                            Biblioteca do projeto não disponível.
-                        </EmptyMessage>
-                    )}
-
-                {!loadingImages &&
-                    !imageError &&
-                    projectPublicId &&
-                    images.length === 0 && (
-                        <EmptyMessage>
-                            Nenhuma imagem disponível
-                            na biblioteca deste projeto.
-                        </EmptyMessage>
-                    )}
-
-                {!loadingImages &&
-                    !imageError &&
-                    images.length > 0 && (
-                        <ImageGrid>
-                            {images.map((image) => {
-                                const selected =
-                                    content.imagePublicId ===
-                                    image.publicId;
-
-                                return (
-                                    <ImageOption
-                                        key={image.publicId}
-                                        type="button"
-                                        $selected={selected}
-                                        onClick={() =>
-                                            handleChange(
-                                                "imagePublicId",
-                                                image.publicId
-                                            )
-                                        }
-                                        aria-label={
-                                            image.alt ||
-                                            "Selecionar imagem"
-                                        }
-                                    >
-                                        <ImagePreview
-                                            src={image.url}
-                                            alt={
-                                                image.alt ||
-                                                "Imagem da biblioteca"
-                                            }
-                                        />
-
-                                        {selected && (
-                                            <SelectedLabel>
-                                                Selecionada
-                                            </SelectedLabel>
-                                        )}
-                                    </ImageOption>
-                                );
-                            })}
-                        </ImageGrid>
-                    )}
 
             </Section>
 
             <Divider />
 
             <Section>
+
                 <SectionTitle>
                     Informações
                 </SectionTitle>
 
                 <TextControl
                     label="Texto alternativo"
-                    value={content.alt ?? ""}
-                    onChange={(value) =>
+                    value={
+                        content.alt ?? ""
+                    }
+                    onChange={value =>
                         handleChange(
                             "alt",
                             value
@@ -327,66 +223,91 @@ export default function ImagePanel({ block }) {
 
                 <TextControl
                     label="Legenda"
-                    value={content.caption ?? ""}
-                    onChange={(value) =>
+                    value={
+                        content.caption ?? ""
+                    }
+                    onChange={value =>
                         handleChange(
                             "caption",
                             value
                         )
                     }
                 />
+
             </Section>
 
             <Section>
+
                 <SectionTitle>
                     Tamanho
                 </SectionTitle>
 
-
                 <WidthControl
                     value={content.width}
-                    onChange={(value) =>
-                        handleChange("width", value)
+                    onChange={value =>
+                        handleChange(
+                            "width",
+                            value
+                        )
                     }
                 />
 
                 <AspectRatioControl
-                    value={content.aspectRatio}
-                    onChange={value => handleChange("aspectRatio", value)}
+                    value={
+                        content.aspectRatio
+                    }
+                    onChange={value =>
+                        handleChange(
+                            "aspectRatio",
+                            value
+                        )
+                    }
                 />
 
             </Section>
 
             <Section>
+
                 <SectionTitle>
                     Aparência
                 </SectionTitle>
 
                 <RadiusControl
                     value={content.radius}
-                    onChange={(value) =>
-                        handleChange("radius", value)
+                    onChange={value =>
+                        handleChange(
+                            "radius",
+                            value
+                        )
                     }
                 />
 
                 <ShadowControl
                     value={content.shadow}
-                    onChange={(value) =>
-                        handleChange("shadow", value)
+                    onChange={value =>
+                        handleChange(
+                            "shadow",
+                            value
+                        )
                     }
                 />
 
                 <ObjectFitControl
                     value={content.objectFit}
-                    onChange={(value) =>
-                        handleChange("objectFit", value)
+                    onChange={value =>
+                        handleChange(
+                            "objectFit",
+                            value
+                        )
                     }
                 />
+
             </Section>
 
             <Divider />
 
             <DebugSection>
+
                 <DebugTitle>
                     Dados do bloco
                 </DebugTitle>
@@ -398,7 +319,9 @@ export default function ImagePanel({ block }) {
                         2
                     )}
                 </DebugContent>
+
             </DebugSection>
+
         </PanelContainer>
     );
 }

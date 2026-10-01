@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
-
 import useBuilderStore from "@/pageBuilder/store/builderStore";
+import useBlockSave from "@/pageBuilder/hooks/useBlockSave";
+
+import SaveButton from "@/pageBuilder/components/SaveButton";
 
 import {
     PanelContainer,
     PanelHeader,
     PanelTitle,
-    SaveButton,
     ErrorMessage,
     DebugSection,
     DebugTitle,
@@ -30,68 +30,32 @@ export default function TextPanel({ block }) {
         state => state.updateBlock
     );
 
-    const saveBlock = useBuilderStore(
-        state => state.saveBlock
-    );
-
-    const dirtyBlocks = useBuilderStore(
-        state => state.dirtyBlocks
-    );
-
-    const isDirty = dirtyBlocks.includes(
-        block.publicId
-    );
-
-    const [saving, setSaving] = useState(false);
-    const [saveError, setSaveError] = useState(false);
+    const {
+        isDirty,
+        saving,
+        saveError,
+        handleSave,
+    } = useBlockSave(block.publicId);
 
     const { content } = block;
 
-    const handleSave = async () => {
-
-        setSaving(true);
-        setSaveError(false);
-
-        try {
-
-            await saveBlock(
-                block.publicId
-            );
-
-        } catch (error) {
-
-            setSaveError(true);
-
-        } finally {
-
-            setSaving(false);
-
-        }
-
-    };
-
     const handleChange = (field, value) => {
-
         updateBlock(
             block.publicId,
             {
                 [field]: value,
             }
         );
-
     };
 
     const handlePaddingChange = changes => {
-
         updateBlock(
             block.publicId,
             changes
         );
-
     };
 
     return (
-
         <PanelContainer>
 
             <PanelHeader>
@@ -101,26 +65,19 @@ export default function TextPanel({ block }) {
                 </PanelTitle>
 
                 <SaveButton
-                    type="button"
                     disabled={!isDirty || saving}
+                    saving={saving}
+                    saveError={saveError}
                     onClick={handleSave}
-                >
-                    {saving
-                        ? "Salvando..."
-                        : saveError
-                            ? "Tentar novamente"
-                            : "Salvar"
-                    }
-                </SaveButton>
+                />
 
             </PanelHeader>
 
             {saveError && (
-
                 <ErrorMessage>
-                    Não foi possível salvar as alterações.
+                    Não foi possível salvar
+                    as alterações.
                 </ErrorMessage>
-
             )}
 
             <TextControl
@@ -226,7 +183,5 @@ export default function TextPanel({ block }) {
             </DebugSection>
 
         </PanelContainer>
-
     );
-
 }
