@@ -2,7 +2,6 @@
 
 import { resolveStyle } from "@/renderer/theme/resolveStyle";
 import useBlockSelection from "@/pageBuilder/hooks/useBlockSelection";
-
 import { ColumnContainer } from "./styles";
 
 export default function Column({
@@ -11,13 +10,17 @@ export default function Column({
     parentBlock = null,
     ancestors = [],
 }) {
-    const { isSelected, handleSelect } = useBlockSelection(
+    const {
+        isSelected,
+        handleSelect,
+    } = useBlockSelection(
         block,
         parentBlock,
         ancestors
     );
 
-    const { content } = block;
+    const { content = {} } = block;
+
     const style = resolveStyle(content);
 
     return (
