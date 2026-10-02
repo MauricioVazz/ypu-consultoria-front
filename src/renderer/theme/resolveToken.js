@@ -225,31 +225,29 @@ export function resolveButtonStyle(value) {
         PRIMARY: {
             background: theme.colors.primary,
             color: theme.colors.white,
-            border: "none"
+            border: "none",
         },
 
         SECONDARY: {
             background: theme.colors.green,
             color: theme.colors.white,
-            border: "none"
+            border: "none",
         },
 
         OUTLINE: {
             background: "transparent",
             color: theme.colors.primary,
-            border: `2px solid ${theme.colors.primary}`
+            border: `2px solid ${theme.colors.primary}`,
         },
 
-        LINK: {
+        GHOST: {
             background: "transparent",
             color: theme.colors.primary,
-            border: "none"
-        }
-
+            border: "2px solid transparent",
+        },
     };
 
     return map[value] || map.PRIMARY;
-
 }
 
 export function resolveButtonSize(value) {

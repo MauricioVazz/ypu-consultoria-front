@@ -20,6 +20,7 @@ export { default as OverlayControl } from "./OverlayControl";
 export { default as OverlayOpacityControl } from "./OverlayOpacityControl";
 export { default as MaxWidthControl } from "./MaxWidthControl";
 export { default as MinHeightControl } from "./MinHeightControl";
-export { default as AlignControl } from "./AlignControl";
+export { default as AlignControl } from "./VerticalAlignControl";
 export { default as JustifyControl } from "./JustifyControl";
 export { default as ColumnSpanControl } from "./ColumnSpanControl";
+export { default as OptionButtonsControl } from "./OptionButtonsControl";

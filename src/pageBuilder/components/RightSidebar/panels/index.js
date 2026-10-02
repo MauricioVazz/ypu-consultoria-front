@@ -6,6 +6,7 @@ import GalleryPanel from "./GalleryPanel/index.js";
 import SectionPanel from "./SectionPanel";
 import RowPanel from "./RowPanel";
 import ColumnPanel from "./ColumnPanel";
+import CTAPanel from "./CTAPanel";
 
 export const panelMap = {
     TITLE: TitlePanel,
@@ -15,6 +16,7 @@ export const panelMap = {
     SECTION: SectionPanel,
     ROW: RowPanel,
     COLUMN: ColumnPanel,
+    CTA: CTAPanel,
     DEFAULT: DefaultPanel,
 };
 
