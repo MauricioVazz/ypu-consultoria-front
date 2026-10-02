@@ -1,20 +1,27 @@
 import styled from "styled-components";
 
-import { resolveGridSpan } from "@/renderer/theme/resolveToken";
-
 export const ColumnContainer = styled.div`
     display: flex;
     flex-direction: column;
     position: relative;
 
-    flex-grow: 1;
-    flex-shrink: 1;
-
+    width: auto;
     min-width: 0;
+    max-width: 100%;
+
     box-sizing: border-box;
 
-    flex-basis: ${({ $desktop }) =>
-        resolveGridSpan($desktop)};
+    grid-column: span ${({ $viewport, $desktop, $tablet, $mobile }) => {
+        if ($viewport === "mobile") {
+            return $mobile;
+        }
+
+        if ($viewport === "tablet") {
+            return $tablet;
+        }
+
+        return $desktop;
+    }};
 
     gap: ${({ $style }) =>
         $style.gap};
@@ -39,18 +46,4 @@ export const ColumnContainer = styled.div`
     outline-offset: -3px;
 
     cursor: pointer;
-
-    @media (max-width: ${({ theme }) =>
-        theme.breakpoints.tablet}) {
-
-        flex-basis: ${({ $tablet }) =>
-            resolveGridSpan($tablet)};
-    }
-
-    @media (max-width: ${({ theme }) =>
-        theme.breakpoints.mobile}) {
-
-        flex-basis: ${({ $mobile }) =>
-            resolveGridSpan($mobile)};
-    }
 `;

@@ -9,6 +9,9 @@ const Wrapper = styled.div`
             $maxWidth?.toLowerCase()
         ] ?? theme.container.xl};
 
+    min-width: 0;
+    box-sizing: border-box;
+
     margin: 0 auto;
 `;
 

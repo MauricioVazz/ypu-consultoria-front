@@ -3,14 +3,18 @@ import styled from "styled-components";
 export const RowContainer = styled.div`
     position: relative;
 
-    display: flex;
+    display: grid;
+
+    grid-template-columns: repeat(
+        12,
+        minmax(0, 1fr)
+    );
 
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
     box-sizing: border-box;
-
-    background: transparent;
-
-    cursor: pointer;
 
     padding-top: ${({ $style }) =>
         $style.paddingTop};
@@ -24,8 +28,10 @@ export const RowContainer = styled.div`
     padding-right: ${({ $style }) =>
         $style.paddingRight};
 
-    gap: ${({ $style }) =>
+    row-gap: ${({ $style }) =>
         $style.gap};
+
+    column-gap: 0;
 
     justify-content: ${({ $style }) =>
         $style.justifyContent};
@@ -33,8 +39,7 @@ export const RowContainer = styled.div`
     align-items: ${({ $style }) =>
         $style.alignItems};
 
-    flex-wrap: ${({ $style }) =>
-        $style.flexWrap};
+    cursor: pointer;
 
     outline: ${({ $isSelected }) =>
         $isSelected

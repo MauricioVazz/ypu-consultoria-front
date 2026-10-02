@@ -46,7 +46,8 @@ export const PageFrame = styled.div`
 
     transform-origin: top center;
 
-    width: max-content;
+    width: ${({ $pageWidth }) =>
+        `${$pageWidth}px`};
 
     flex-shrink: 0;
 `;

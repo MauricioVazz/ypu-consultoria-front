@@ -70,9 +70,12 @@ export default function Workspace() {
 
             <PageViewport
                 $width={pageWidth}
-                $pageWidth={pageWidth}
+                $scale={scale}
             >
-                <PageFrame $scale={scale}>
+                <PageFrame
+                    $scale={scale}
+                    $pageWidth={pageWidth}
+                >
 
                     <Page />
 
