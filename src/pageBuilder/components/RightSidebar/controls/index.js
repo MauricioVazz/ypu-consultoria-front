@@ -24,3 +24,7 @@ export { default as AlignControl } from "./VerticalAlignControl";
 export { default as JustifyControl } from "./JustifyControl";
 export { default as ColumnSpanControl } from "./ColumnSpanControl";
 export { default as OptionButtonsControl } from "./OptionButtonsControl";
+export { default as NumberOptionsControl } from "./NumberOptionsControl";
+export { default as HorizontalAlignControl } from "./HorizontalAlignControl";
+export { default as CardStyleControl } from "./CardStyleControl";
+export { default as GeneralPaddingControl } from "./GeneralPaddingControl";

@@ -1,7 +1,6 @@
 import { theme } from "@/styles/theme";
 import {
     resolveRadius,
-    resolveSpacing,
 } from "./resolveToken";
 
 export function resolveCardStyle(content = {}) {
@@ -10,8 +9,6 @@ export function resolveCardStyle(content = {}) {
 
     const base = {
         borderRadius: radius,
-        padding: resolveSpacing(content.padding || "LG"),
-
         transition: "transform 180ms ease, box-shadow 180ms ease",
         willChange: "transform",
     };

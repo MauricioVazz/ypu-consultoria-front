@@ -7,6 +7,7 @@ import SectionPanel from "./SectionPanel";
 import RowPanel from "./RowPanel";
 import ColumnPanel from "./ColumnPanel";
 import CTAPanel from "./CTAPanel";
+import FeaturesPanel from "./FeaturesPanel";
 
 export const panelMap = {
     TITLE: TitlePanel,
@@ -17,6 +18,7 @@ export const panelMap = {
     ROW: RowPanel,
     COLUMN: ColumnPanel,
     CTA: CTAPanel,
+    FEATURES: FeaturesPanel,
     DEFAULT: DefaultPanel,
 };
 
