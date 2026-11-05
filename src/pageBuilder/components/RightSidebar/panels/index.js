@@ -8,6 +8,7 @@ import RowPanel from "./RowPanel";
 import ColumnPanel from "./ColumnPanel";
 import CTAPanel from "./CTAPanel";
 import FeaturesPanel from "./FeaturesPanel";
+import MetricsPanel from "./MetricsPanel";
 
 export const panelMap = {
     TITLE: TitlePanel,
@@ -19,6 +20,7 @@ export const panelMap = {
     COLUMN: ColumnPanel,
     CTA: CTAPanel,
     FEATURES: FeaturesPanel,
+    METRICS: MetricsPanel,
     DEFAULT: DefaultPanel,
 };
 
