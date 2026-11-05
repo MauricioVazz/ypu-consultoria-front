@@ -1,7 +1,6 @@
 import Grid from "@/pageBuilder/components/ui/Grid";
 
 import {
-    MetricsContainer,
     MetricCard,
     MetricValue,
     MetricLabel,
@@ -24,15 +23,7 @@ export default function Metrics({ block }) {
 
     const alignment = ALIGNMENT[content.align] ?? "center";
 
-    const padding = {
-        top: resolveSpacing(content.paddingTop ?? "LG"),
-        right: resolveSpacing(content.paddingRight ?? "LG"),
-        bottom: resolveSpacing(content.paddingBottom ?? "LG"),
-        left: resolveSpacing(content.paddingLeft ?? "LG"),
-    };
-
     return (
-        <MetricsContainer $padding={padding}>
             <Grid
                 columns={content.columns ?? 4}
                 gap={content.gap ?? "MD"}
@@ -40,7 +31,7 @@ export default function Metrics({ block }) {
                 {content.items?.map((item, index) => (
                     <MetricCard
                         key={index}
-                        $padding={resolveSpacing("LG")}
+                        $padding={resolveSpacing(content.padding ?? "LG")}
                         $radius={resolveRadius("MD")}
                         $align={alignment}
                     >
@@ -62,6 +53,5 @@ export default function Metrics({ block }) {
                     </MetricCard>
                 ))}
             </Grid>
-        </MetricsContainer>
     );
 }

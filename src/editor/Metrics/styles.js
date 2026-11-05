@@ -2,14 +2,6 @@ import styled from "styled-components";
 
 import { theme } from "@/styles/theme";
 
-export const MetricsContainer = styled.div`
-    width: 100%;
-    box-sizing: border-box;
-
-    padding: ${({ $padding }) =>
-    `${$padding.top} ${$padding.right} ${$padding.bottom} ${$padding.left}`};
-`;
-
 export const MetricCard = styled.div`
     display: flex;
     flex-direction: column;
@@ -32,14 +24,6 @@ export const MetricCard = styled.div`
     $align === "flex-start" ? "left" : "center"};
 
     overflow-wrap: anywhere;
-
-    @media (max-width: 1024px) {
-        padding: ${({ theme }) => theme.spacing.md};
-    }
-
-    @media (max-width: 768px) {
-        padding: ${({ theme }) => theme.spacing.sm};
-    }
 `;
 
 export const MetricValue = styled.h2`

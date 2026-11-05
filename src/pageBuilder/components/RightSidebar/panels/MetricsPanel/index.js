@@ -11,9 +11,9 @@ import {
 
 import {
     NumberOptionsControl,
-    PaddingControl,
     GapControl,
     OptionButtonsControl,
+    GeneralPaddingControl,
 } from "../../controls";
 
 import MetricsItemsControl from "@/pageBuilder/components/MetricsItemsControl";
@@ -61,10 +61,12 @@ export default function MetricsPanel({ block }) {
                 }
             />
 
-            <PaddingControl
-                value={block.content}
-                onChange={changes =>
-                    handleChange(changes)
+            <GeneralPaddingControl
+                value={content.padding ?? "LG"}
+                onChange={value =>
+                    handleChange({
+                        padding: value,
+                    })
                 }
             />
 
