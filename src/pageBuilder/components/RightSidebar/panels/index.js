@@ -9,6 +9,7 @@ import ColumnPanel from "./ColumnPanel";
 import CTAPanel from "./CTAPanel";
 import FeaturesPanel from "./FeaturesPanel";
 import MetricsPanel from "./MetricsPanel";
+import TimelinePanel from "./TimelinePanel";
 
 export const panelMap = {
     TITLE: TitlePanel,
@@ -21,6 +22,7 @@ export const panelMap = {
     CTA: CTAPanel,
     FEATURES: FeaturesPanel,
     METRICS: MetricsPanel,
+    TIMELINE: TimelinePanel,
     DEFAULT: DefaultPanel,
 };
 
