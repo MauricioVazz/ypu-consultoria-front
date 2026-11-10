@@ -141,7 +141,7 @@ export default function Gallery({ block }) {
     const next = () => {
         setIndex(currentIndex =>
             currentIndex ===
-                displayImages.length - 1
+            displayImages.length - 1
                 ? 0
                 : currentIndex + 1
         );
@@ -150,7 +150,7 @@ export default function Gallery({ block }) {
     const getImage = position => {
         return displayImages[
             (position + displayImages.length) %
-            displayImages.length
+                displayImages.length
         ];
     };
 
@@ -290,7 +290,7 @@ export default function Gallery({ block }) {
                                     "transparent",
                                 cursor:
                                     lightbox &&
-                                        !image.placeholder
+                                    !image.placeholder
                                         ? "zoom-in"
                                         : "default",
                             }}
@@ -423,7 +423,7 @@ export default function Gallery({ block }) {
                                     "avoid",
                                 cursor:
                                     lightbox &&
-                                        !image.placeholder
+                                    !image.placeholder
                                         ? "zoom-in"
                                         : "default",
                             }}
@@ -563,7 +563,7 @@ export default function Gallery({ block }) {
                                 "transparent",
                             cursor:
                                 lightbox &&
-                                    !currentImage.placeholder
+                                !currentImage.placeholder
                                     ? "zoom-in"
                                     : "default",
                         }}
@@ -622,12 +622,13 @@ export default function Gallery({ block }) {
                                         imageIndex
                                     )
                                 }
-                                aria-label={`Ir para imagem ${imageIndex + 1
-                                    }`}
+                                aria-label={`Ir para imagem ${
+                                    imageIndex + 1
+                                }`}
                                 style={{
                                     width:
                                         imageIndex ===
-                                            safeIndex
+                                        safeIndex
                                             ? 28
                                             : 8,
                                     height: 8,
@@ -637,13 +638,13 @@ export default function Gallery({ block }) {
                                         999,
                                     background:
                                         imageIndex ===
-                                            safeIndex
+                                        safeIndex
                                             ? theme
-                                                .colors
-                                                .primary
+                                                  .colors
+                                                  .primary
                                             : theme
-                                                .colors
-                                                .border,
+                                                  .colors
+                                                  .border,
                                     cursor: "pointer",
                                     transition:
                                         "all .2s ease",

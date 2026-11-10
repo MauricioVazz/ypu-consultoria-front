@@ -7,3 +7,10 @@ export async function getProjectLayout(publicId) {
 
     return response.blocks;
 }
+
+export async function reorderBlocks(blocks) {
+    return await api("/blocks/reorder", {
+        method: "PATCH",
+        body: JSON.stringify(blocks),
+    });
+}

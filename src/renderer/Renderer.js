@@ -1,3 +1,5 @@
+"use client";
+
 import BlockRenderer from "./BlockRenderer";
 
 export default function Renderer({ blocks = [] }) {
