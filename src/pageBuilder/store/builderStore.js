@@ -133,6 +133,28 @@ const insertBlockIntoTree = (blocks, targetParentPublicId, movedBlock, position)
     });
 };
 
+const getRowPositions = (blocks, parentPublicId = null) => {
+    const positions = {};
+
+    blocks.forEach((block, index) => {
+        if (block.type === "ROW") {
+            positions[block.publicId] = {
+                parentPublicId,
+                position: index,
+            };
+        }
+
+        if (block.children?.length) {
+            Object.assign(
+                positions,
+                getRowPositions(block.children, block.publicId)
+            );
+        }
+    });
+
+    return positions;
+};
+
 const useBuilderStore = create((set, get) => ({
 
     project: null,
@@ -153,6 +175,8 @@ const useBuilderStore = create((set, get) => ({
 
     originalSectionNumbers: {},
 
+    savedRowPositions: {},
+
     setLayout: (layout) =>
         set({
             layout,
@@ -169,6 +193,8 @@ const useBuilderStore = create((set, get) => ({
                         block.position + 1
                     ])
             ),
+
+            savedRowPositions: getRowPositions(layout),
         }),
 
     hasSectionOrderChanges: () => {
@@ -480,6 +506,175 @@ const useBuilderStore = create((set, get) => ({
         });
 
         return true;
+    },
+
+    moveRowLocal: (publicId, targetSectionPublicId, position) => {
+        const { layout } = get();
+
+        const row = findBlockByPublicId(layout, publicId);
+        const targetSection = findBlockByPublicId(
+            layout,
+            targetSectionPublicId
+        );
+
+        // Validar a Row
+        if (!row || row.type !== "ROW") return false;
+
+        // Validar a Section de destino
+        if (!targetSection || targetSection.type !== "SECTION") {
+            return false;
+        }
+
+        // Validar a posição
+        if (!Number.isInteger(position) || position < 0) {
+            return false;
+        }
+
+        // Evitar movimentação para a mesma posição
+        if (
+            row.parentId === targetSection.id &&
+            row.position === position
+        ) {
+            return false;
+        }
+
+        return get().moveBlockLocal(
+            publicId,
+            targetSectionPublicId,
+            position
+        );
+    },
+
+    hasRowChanges: () => {
+        const { layout, savedRowPositions } = get();
+
+        const currentPositions = getRowPositions(layout);
+
+        const allRowIds = new Set([
+            ...Object.keys(savedRowPositions),
+            ...Object.keys(currentPositions),
+        ]);
+
+        return [...allRowIds].some(publicId => {
+            const saved = savedRowPositions[publicId];
+            const current = currentPositions[publicId];
+
+            if (!saved || !current) return true;
+
+            return (
+                saved.parentPublicId !== current.parentPublicId ||
+                saved.position !== current.position
+            );
+        });
+    },
+
+    resetRowPositions: () => {
+        const { layout, savedRowPositions, selectedBlock } = get();
+
+        let updatedLayout = layout;
+
+        const rowsBySection = {};
+
+        Object.entries(savedRowPositions).forEach(([publicId, original]) => {
+            if (!rowsBySection[original.parentPublicId]) {
+                rowsBySection[original.parentPublicId] = [];
+            }
+
+            rowsBySection[original.parentPublicId].push({
+                publicId,
+                position: original.position,
+            });
+        });
+
+        Object.entries(rowsBySection).forEach(([sectionPublicId, rows]) => {
+            rows.sort((a, b) => a.position - b.position);
+
+            rows.forEach(({ publicId, position }) => {
+                const result = removeBlockFromTree(updatedLayout, publicId);
+
+                if (!result.removedBlock) return;
+
+                updatedLayout = insertBlockIntoTree(
+                    result.blocks,
+                    sectionPublicId,
+                    result.removedBlock,
+                    position
+                );
+            });
+        });
+
+        const updatedSelectedBlock = selectedBlock
+            ? findBlockByPublicId(updatedLayout, selectedBlock.publicId)
+            : null;
+
+        set({
+            layout: updatedLayout,
+            selectedBlock: updatedSelectedBlock,
+        });
+    },
+
+    markRowPositionsSaved: () => {
+        const { layout } = get();
+
+        set({
+            savedRowPositions: getRowPositions(layout),
+        });
+    },
+
+    saveRowPositions: async () => {
+        const { layout, savedRowPositions } = get();
+
+        const currentPositions = getRowPositions(layout);
+
+        const changedRows = Object.entries(currentPositions)
+            .filter(([publicId, current]) => {
+                const saved = savedRowPositions[publicId];
+
+                if (!saved) return true;
+
+                return (
+                    saved.parentPublicId !== current.parentPublicId ||
+                    saved.position !== current.position
+                );
+            })
+            .map(([publicId, current]) => ({
+                publicId,
+                position: current.position,
+                parentPublicId: current.parentPublicId,
+            }));
+
+        if (!changedRows.length) return false;
+
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/blocks/reorder`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(changedRows),
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+
+                console.error("Backend reorder error:", errorData);
+
+                throw new Error(
+                    `Failed to save row positions: ${response.status}`
+                );
+            }
+
+            get().markRowPositionsSaved();
+
+            return true;
+
+        } catch (error) {
+            console.error("Error saving row positions:", error);
+            throw error;
+        }
     },
 
 }));

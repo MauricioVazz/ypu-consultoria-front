@@ -18,6 +18,11 @@ export default function Section({
     children,
     parentBlock = null,
     ancestors = [],
+    onSectionDragOver,
+    onSectionDrop,
+    draggedRow,
+    onSectionDragLeave,
+    dragOverSectionId,
 }) {
     const { isSelected, handleSelect } = useBlockSelection(
         block,
@@ -32,6 +37,10 @@ export default function Section({
     return (
         <SectionContainer
             onClick={handleSelect}
+            onDragOver={event => onSectionDragOver?.(event, block)}
+            onDragLeave={event => onSectionDragLeave?.(event, block)}
+            onDrop={event => onSectionDrop?.(event, block)}
+            $isDropTarget={dragOverSectionId === block.publicId}
             $paddingTop={style.paddingTop}
             $paddingBottom={style.paddingBottom}
             $background={style.background}

@@ -2,19 +2,30 @@ import { blocks } from "@/editor";
 import { validateBlock } from "../utils/validateBlock.js";
 import BlockWrapper from "./BlockWrapper";
 
-export default function BlockRenderer({ block, parentBlock = null, ancestors = [], }) {
 
-    //console.log("Render:", block.type);
+export default function BlockRenderer({
+    block,
+    parentBlock = null,
+    ancestors = [],
+    onRowDragStart,
+    onRowDragEnd,
+    onSectionDragOver,
+    onSectionDrop,
+    draggedRow,
+    onSectionDragLeave,
+    dragOverSectionId,
+    onRowDragOver,
+    rowDropPosition,
+    onRowDrop,
+}) {
 
     if (!validateBlock(block)) {
-        //console.warn("Bloco inválido:", block);
         return null;
     }
 
     const Component = blocks[block.type];
 
     if (!Component) {
-        //console.warn("Bloco não registrado:", block.type);
         return null;
     }
 
@@ -28,6 +39,16 @@ export default function BlockRenderer({ block, parentBlock = null, ancestors = [
                 block={block}
                 parentBlock={parentBlock}
                 ancestors={ancestors}
+                onRowDragStart={onRowDragStart}
+                onRowDragEnd={onRowDragEnd}
+                onSectionDragOver={onSectionDragOver}
+                onSectionDrop={onSectionDrop}
+                draggedRow={draggedRow}
+                onSectionDragLeave={onSectionDragLeave}
+                dragOverSectionId={dragOverSectionId}
+                onRowDragOver={onRowDragOver}
+                rowDropPosition={rowDropPosition}
+                onRowDrop={onRowDrop}
             >
                 {block.children?.map(child => (
                     <BlockRenderer
@@ -35,6 +56,16 @@ export default function BlockRenderer({ block, parentBlock = null, ancestors = [
                         block={child}
                         parentBlock={block}
                         ancestors={[...ancestors, block,]}
+                        onRowDragStart={onRowDragStart}
+                        onRowDragEnd={onRowDragEnd}
+                        onSectionDragOver={onSectionDragOver}
+                        onSectionDrop={onSectionDrop}
+                        draggedRow={draggedRow}
+                        onSectionDragLeave={onSectionDragLeave}
+                        dragOverSectionId={dragOverSectionId}
+                        onRowDragOver={onRowDragOver}
+                        rowDropPosition={rowDropPosition}
+                        onRowDrop={onRowDrop}
                     />
                 ))}
             </Component>
