@@ -5,6 +5,7 @@ import useBuilderStore from "@/pageBuilder/store/builderStore";
 import BlockRenderer from "@/pageBuilder/renderer/BlockRenderer";
 import { getViewportWidth } from "@/pageBuilder/utils/viewport";
 import useRowDragAndDrop from "@/pageBuilder/hooks/useRowDragAndDrop";
+import useColumnDragAndDrop from "@/pageBuilder/hooks/useColumnDragAndDrop";
 
 export default function Page() {
 
@@ -20,6 +21,15 @@ export default function Page() {
         handleSectionDrop,
         handleRowDrop,
     } = useRowDragAndDrop();
+
+    const {
+        draggedColumn,
+        columnDropPosition,
+        handleColumnDragStart,
+        handleColumnDragEnd,
+        handleColumnDragOver,
+        handleColumnDrop,
+    } = useColumnDragAndDrop();
 
     const layout = useBuilderStore(
         state => state.layout
@@ -54,6 +64,13 @@ export default function Page() {
                         onRowDragOver={handleRowDragOver}
                         onRowDrop={handleRowDrop}
                         rowDropPosition={rowDropPosition}
+
+                        draggedColumn={draggedColumn}
+                        columnDropPosition={columnDropPosition}
+                        onColumnDragStart={handleColumnDragStart}
+                        onColumnDragEnd={handleColumnDragEnd}
+                        onColumnDragOver={handleColumnDragOver}
+                        onColumnDrop={handleColumnDrop}
                     />
                 ))
 

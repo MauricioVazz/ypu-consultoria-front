@@ -1,12 +1,10 @@
-
 "use client";
 
-import { useState } from "react";
-
 import useBuilderStore from "@/pageBuilder/store/builderStore";
-import { reorderBlocks } from "@/pageBuilder/services/projectService";
 
+import useStructureSave from "@/pageBuilder/hooks/useStructureSave";
 import useSectionDragAndDrop from "../../hooks/useSectionDragAndDrop";
+
 import SectionItem from "./SectionItem";
 
 import {
@@ -28,28 +26,21 @@ export default function SectionsPanel({
     selectedBlock,
     onOpenSection,
 }) {
-    const [isSaving, setIsSaving] = useState(false);
-    const [saveError, setSaveError] = useState("");
-
     const moveBlockLocal = useBuilderStore(
         state => state.moveBlockLocal
-    );
-
-    const hasSectionOrderChanges = useBuilderStore(
-        state => state.hasSectionOrderChanges
-    );
-
-    const resetSectionOrder = useBuilderStore(
-        state => state.resetSectionOrder
-    );
-
-    const markSectionOrderSaved = useBuilderStore(
-        state => state.markSectionOrderSaved
     );
 
     const originalSectionNumbers = useBuilderStore(
         state => state.originalSectionNumbers
     );
+
+    const {
+        hasChanges,
+        isSaving,
+        saveError,
+        saveStructure,
+        resetChanges,
+    } = useStructureSave();
 
     const {
         dropTarget,
@@ -58,35 +49,6 @@ export default function SectionsPanel({
         handleDrop,
         handleDragEnd,
     } = useSectionDragAndDrop(sections, moveBlockLocal);
-
-    const hasChanges = hasSectionOrderChanges();
-
-    const handleSaveOrder = async () => {
-        if (!hasChanges || isSaving) return;
-
-        try {
-            setIsSaving(true);
-            setSaveError("");
-
-            const blocks = sections.map((section, index) => ({
-                publicId: section.publicId,
-                position: index,
-            }));
-
-            await reorderBlocks(blocks);
-
-            markSectionOrderSaved();
-
-        } catch (error) {
-            console.error("Erro ao salvar ordem das seções:", error);
-
-            setSaveError(
-                error.message || "Não foi possível salvar a ordem das seções."
-            );
-        } finally {
-            setIsSaving(false);
-        }
-    };
 
     return (
         <>
@@ -102,7 +64,7 @@ export default function SectionsPanel({
                 <SectionOrderActions>
                     {hasChanges && (
                         <CancelOrderButton
-                            onClick={resetSectionOrder}
+                            onClick={resetChanges}
                             disabled={isSaving}
                         >
                             Cancelar
@@ -112,7 +74,7 @@ export default function SectionsPanel({
                     <SectionOrderButton
                         $disabled={!hasChanges || isSaving}
                         disabled={!hasChanges || isSaving}
-                        onClick={handleSaveOrder}
+                        onClick={saveStructure}
                     >
                         {isSaving ? "Salvando..." : "Salvar"}
                     </SectionOrderButton>
@@ -132,7 +94,9 @@ export default function SectionsPanel({
                             key={section.publicId}
                             section={section}
                             index={index}
-                            originalNumber={originalSectionNumbers[section.publicId]}
+                            originalNumber={
+                                originalSectionNumbers[section.publicId]
+                            }
                             isActive={
                                 selectedBlock?.publicId === section.publicId
                             }

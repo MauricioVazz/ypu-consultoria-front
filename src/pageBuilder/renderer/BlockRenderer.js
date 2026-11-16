@@ -17,6 +17,12 @@ export default function BlockRenderer({
     onRowDragOver,
     rowDropPosition,
     onRowDrop,
+    draggedColumn,
+    columnDropPosition,
+    onColumnDragStart,
+    onColumnDragEnd,
+    onColumnDragOver,
+    onColumnDrop,
 }) {
 
     if (!validateBlock(block)) {
@@ -49,6 +55,13 @@ export default function BlockRenderer({
                 onRowDragOver={onRowDragOver}
                 rowDropPosition={rowDropPosition}
                 onRowDrop={onRowDrop}
+
+                draggedColumn={draggedColumn}
+                columnDropPosition={columnDropPosition}
+                onColumnDragStart={onColumnDragStart}
+                onColumnDragEnd={onColumnDragEnd}
+                onColumnDragOver={onColumnDragOver}
+                onColumnDrop={onColumnDrop}
             >
                 {block.children?.map(child => (
                     <BlockRenderer
@@ -66,6 +79,13 @@ export default function BlockRenderer({
                         onRowDragOver={onRowDragOver}
                         rowDropPosition={rowDropPosition}
                         onRowDrop={onRowDrop}
+
+                        draggedColumn={draggedColumn}
+                        columnDropPosition={columnDropPosition}
+                        onColumnDragStart={onColumnDragStart}
+                        onColumnDragEnd={onColumnDragEnd}
+                        onColumnDragOver={onColumnDragOver}
+                        onColumnDrop={onColumnDrop}
                     />
                 ))}
             </Component>

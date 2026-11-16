@@ -2,6 +2,9 @@
 
 import { create } from 'zustand';
 
+import { serializeLayout } from "@/pageBuilder/utils/serializeLayout";
+import { restoreLayoutStructure } from "@/pageBuilder/utils/restoreLayoutStructure";
+
 const findBlockByPublicId = (blocks, publicId) => {
     for (const block of blocks) {
         if (block.publicId === publicId) {
@@ -173,6 +176,8 @@ const useBuilderStore = create((set, get) => ({
 
     savedSectionOrder: [],
 
+    savedStructure: [],
+
     originalSectionNumbers: {},
 
     savedRowPositions: {},
@@ -180,6 +185,8 @@ const useBuilderStore = create((set, get) => ({
     setLayout: (layout) =>
         set({
             layout,
+
+            savedStructure: serializeLayout(layout),
 
             savedSectionOrder: layout
                 .filter(block => block.type === "SECTION")
@@ -196,6 +203,60 @@ const useBuilderStore = create((set, get) => ({
 
             savedRowPositions: getRowPositions(layout),
         }),
+
+    hasStructureChanges: () => {
+        const { layout, savedStructure } = get();
+
+        const currentStructure = serializeLayout(layout);
+
+        return JSON.stringify(currentStructure) !==
+            JSON.stringify(savedStructure);
+    },
+
+    markStructureSaved: () => {
+        const { layout } = get();
+
+        const currentOrder = layout
+            .filter(block => block.type === "SECTION")
+            .map(block => block.publicId);
+
+        const updatedNumbers = Object.fromEntries(
+            layout
+                .filter(block => block.type === "SECTION")
+                .map((block, index) => [
+                    block.publicId,
+                    index + 1,
+                ])
+        );
+
+        set({
+            savedStructure: serializeLayout(layout),
+            savedSectionOrder: currentOrder,
+            originalSectionNumbers: updatedNumbers,
+            savedRowPositions: getRowPositions(layout),
+        });
+    },
+
+    resetStructure: () => {
+        const { layout, savedStructure, selectedBlock } = get();
+
+        const restoredLayout = restoreLayoutStructure(
+            layout,
+            savedStructure
+        );
+
+        const updatedSelectedBlock = selectedBlock
+            ? findBlockByPublicId(
+                restoredLayout,
+                selectedBlock.publicId
+            )
+            : null;
+
+        set({
+            layout: restoredLayout,
+            selectedBlock: updatedSelectedBlock,
+        });
+    },
 
     hasSectionOrderChanges: () => {
         const { layout, savedSectionOrder } = get();
@@ -675,6 +736,41 @@ const useBuilderStore = create((set, get) => ({
             console.error("Error saving row positions:", error);
             throw error;
         }
+    },
+
+    moveColumnLocal: (publicId, targetRowPublicId, position) => {
+        const { layout } = get();
+
+        const column = findBlockByPublicId(layout, publicId);
+        const targetRow = findBlockByPublicId(
+            layout,
+            targetRowPublicId
+        );
+
+        // Validar a Column
+        if (!column || column.type !== "COLUMN") return false;
+
+        // Validar a Row de destino
+        if (!targetRow || targetRow.type !== "ROW") return false;
+
+        // Validar a posição
+        if (!Number.isInteger(position) || position < 0) {
+            return false;
+        }
+
+        // Evitar movimentação para a mesma posição
+        if (
+            column.parentId === targetRow.id &&
+            column.position === position
+        ) {
+            return false;
+        }
+
+        return get().moveBlockLocal(
+            publicId,
+            targetRowPublicId,
+            position
+        );
     },
 
 }));
