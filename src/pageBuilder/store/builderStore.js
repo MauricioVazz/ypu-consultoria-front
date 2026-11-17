@@ -362,6 +362,8 @@ const useBuilderStore = create((set, get) => ({
     setProjectPublicId: (projectPublicId) =>
         set({ projectPublicId }),
 
+    setProject: (project) => set({ project }),
+
     selectBlock: (block) =>
         set({
             selectedBlock: block

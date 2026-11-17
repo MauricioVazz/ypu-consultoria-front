@@ -1,6 +1,9 @@
+
 "use client";
 
 import useBuilderStore from "@/pageBuilder/store/builderStore";
+
+import { DeviceSelect } from "./styles";
 
 const devices = [
     {
@@ -22,7 +25,6 @@ const devices = [
 ];
 
 export default function ToolbarDevices() {
-
     const viewport = useBuilderStore(
         state => state.viewport
     );
@@ -32,11 +34,9 @@ export default function ToolbarDevices() {
     );
 
     return (
-        <select
+        <DeviceSelect
             value={viewport}
-            onChange={e =>
-                setViewport(e.target.value)
-            }
+            onChange={event => setViewport(event.target.value)}
         >
             {devices.map(device => (
                 <option
@@ -46,6 +46,6 @@ export default function ToolbarDevices() {
                     {device.label}
                 </option>
             ))}
-        </select>
+        </DeviceSelect>
     );
 }

@@ -31,8 +31,12 @@ export const ToolbarContainer = styled.header`
         left: 50%;
         transform: translateX(-50%);
 
+        display: flex;
         flex-direction: column;
+        align-items: center;
+        justify-content: center;
         gap: 4px;
+        text-align: center;
     }
 
     .right {

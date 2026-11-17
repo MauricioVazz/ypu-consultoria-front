@@ -6,7 +6,7 @@ import BuilderLayout from "../../components/BuilderLayout";
 
 import useBuilderStore from "../../store/builderStore";
 
-import { getProjectLayout } from "../../services/projectService";
+import { getProjectLayoutWithProject } from "../../services/projectService";
 
 export default function BuilderProvider({ publicId }) {
 
@@ -20,6 +20,10 @@ export default function BuilderProvider({ publicId }) {
         state => state.setProjectPublicId
     );
 
+    const setProject = useBuilderStore(
+        state => state.setProject
+    );
+
     useEffect(() => {
 
         setProjectPublicId(publicId);
@@ -30,9 +34,11 @@ export default function BuilderProvider({ publicId }) {
 
                 setLoading(true);
 
-                const blocks = await getProjectLayout(publicId);
+                const response = await getProjectLayoutWithProject(publicId);
 
-                setLayout(blocks);
+                setProject(response.project);
+
+                setLayout(response.blocks);
 
             } catch (error) {
 
@@ -51,7 +57,7 @@ export default function BuilderProvider({ publicId }) {
 
         loadProject();
 
-    }, [publicId, setProjectPublicId, setLayout, setLoading]);
+    }, [publicId, setProjectPublicId, setProject, setLayout, setLoading]);
 
     return <BuilderLayout />;
 

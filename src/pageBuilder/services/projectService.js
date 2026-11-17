@@ -8,6 +8,12 @@ export async function getProjectLayout(publicId) {
     return response.blocks;
 }
 
+export async function getProjectLayoutWithProject(publicId) {
+    return await api(
+        `/projects/${publicId}/layout`
+    );
+}
+
 export async function reorderBlocks(blocks) {
     return await api("/blocks/reorder", {
         method: "PATCH",
