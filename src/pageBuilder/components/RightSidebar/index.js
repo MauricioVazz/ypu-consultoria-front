@@ -2,12 +2,27 @@
 
 import { SidebarContainer } from "./styles";
 import useBuilderStore from "@/pageBuilder/store/builderStore";
+
 import DefaultPanel from "./panels/DefaultPanel";
 import { panelMap } from "./panels/index.js";
 
-export default function RightSidebar() {
+import useBlockDelete from "@/pageBuilder/hooks/useBlockDelete";
 
-    const selectedBlock = useBuilderStore(state => state.selectedBlock);
+import {
+    DeleteButton,
+    DeleteSection,
+} from "./styles";
+
+export default function RightSidebar() {
+    const selectedBlock = useBuilderStore(
+        state => state.selectedBlock
+    );
+
+    const {
+        isDeleting,
+        deleteError,
+        handleDelete,
+    } = useBlockDelete();
 
     if (!selectedBlock) {
         return (
@@ -21,9 +36,21 @@ export default function RightSidebar() {
 
     return (
         <SidebarContainer>
-
             <Panel block={selectedBlock} />
 
+            <DeleteSection>
+                {deleteError && (
+                    <p>{deleteError}</p>
+                )}
+
+                <DeleteButton
+                    type="button"
+                    disabled={isDeleting}
+                    onClick={() => handleDelete(selectedBlock.publicId)}
+                >
+                    {isDeleting ? "Excluindo..." : "Excluir bloco"}
+                </DeleteButton>
+            </DeleteSection>
         </SidebarContainer>
     );
 }

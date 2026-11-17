@@ -108,7 +108,7 @@ const insertBlockIntoTree = (blocks, targetParentPublicId, movedBlock, position)
 
             children.splice(position, 0, {
                 ...movedBlock,
-                parentId: block.id,
+                parentId: block.publicId,
             });
 
             return {
@@ -156,6 +156,22 @@ const getRowPositions = (blocks, parentPublicId = null) => {
     });
 
     return positions;
+};
+
+const findBlockById = (blocks, id) => {
+    for (const block of blocks) {
+        if (block.id === id) {
+            return block;
+        }
+
+        if (block.children?.length) {
+            const found = findBlockById(block.children, id);
+
+            if (found) return found;
+        }
+    }
+
+    return null;
 };
 
 const useBuilderStore = create((set, get) => ({
@@ -771,6 +787,91 @@ const useBuilderStore = create((set, get) => ({
             targetRowPublicId,
             position
         );
+    },
+
+    addBlock: newBlock => {
+        const state = get();
+
+        const parent = newBlock.parentId
+            ? findBlockById(state.layout, newBlock.parentId)
+            : null;
+
+        const parentPublicId = parent?.publicId || null;
+
+        // Verificar se o pai existe
+        if (newBlock.parentId && !parent) {
+            return false;
+        }
+
+        // Identificar os elementos que estarão no mesmo nível
+        const siblings = parent
+            ? parent.children || []
+            : state.layout;
+
+        const position = Number.isInteger(newBlock.position)
+            ? newBlock.position
+            : siblings.length;
+
+        // Inserir o bloco retornado pelo backend
+        const updatedLayout = insertBlockIntoTree(
+            state.layout,
+            parentPublicId,
+            {
+                ...newBlock,
+                children: [],
+            },
+            position
+        );
+
+        // Selecionar o bloco recém-criado
+        const selectedBlock = findBlockByPublicId(
+            updatedLayout,
+            newBlock.publicId
+        );
+
+        set({
+            layout: updatedLayout,
+            selectedBlock,
+        });
+
+        return true;
+    },
+
+    deleteBlockLocal: publicId => {
+        const { layout, selectedBlock, dirtyBlocks } = get();
+
+        const targetBlock = findBlockByPublicId(layout, publicId);
+
+        if (!targetBlock) return;
+
+        const removedPublicIds = [];
+
+        const collectPublicIds = block => {
+            removedPublicIds.push(block.publicId);
+
+            block.children?.forEach(collectPublicIds);
+        };
+
+        collectPublicIds(targetBlock);
+
+        const { blocks: updatedLayout } = removeBlockFromTree(
+            layout,
+            publicId
+        );
+
+        const shouldClearSelection =
+            selectedBlock &&
+            removedPublicIds.includes(selectedBlock.publicId);
+
+        set({
+            layout: updatedLayout,
+            selectedBlock: shouldClearSelection
+                ? null
+                : findBlockByPublicId(updatedLayout, selectedBlock.publicId),
+            dirtyBlocks: dirtyBlocks.filter(
+                id => !removedPublicIds.includes(id)
+            ),
+        });
     },
 
 }));

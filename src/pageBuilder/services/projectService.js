@@ -14,3 +14,17 @@ export async function reorderBlocks(blocks) {
         body: JSON.stringify(blocks),
     });
 }
+
+
+export async function createBlock(publicId, blockData) {
+    return await api(`/projects/${publicId}/blocks`, {
+        method: "POST",
+        body: JSON.stringify(blockData),
+    });
+}
+
+export async function deleteBlock(publicId) {
+    return await api(`/blocks/${publicId}`, {
+        method: "DELETE",
+    });
+}
