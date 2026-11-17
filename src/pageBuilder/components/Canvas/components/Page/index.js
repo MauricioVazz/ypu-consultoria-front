@@ -6,6 +6,7 @@ import BlockRenderer from "@/pageBuilder/renderer/BlockRenderer";
 import { getViewportWidth } from "@/pageBuilder/utils/viewport";
 import useRowDragAndDrop from "@/pageBuilder/hooks/useRowDragAndDrop";
 import useColumnDragAndDrop from "@/pageBuilder/hooks/useColumnDragAndDrop";
+import useContentBlockDragAndDrop from "@/pageBuilder/hooks/useContentBlockDragAndDrop";
 
 export default function Page() {
 
@@ -31,6 +32,16 @@ export default function Page() {
         handleColumnDrop,
     } = useColumnDragAndDrop();
 
+    const {
+        draggedBlock,
+        contentDropPosition,
+        handleContentDragStart,
+        handleContentDragEnd,
+        handleContentDragOver,
+        handleContentDragLeave,
+        handleContentDrop,
+    } = useContentBlockDragAndDrop();
+
     const layout = useBuilderStore(
         state => state.layout
     );
@@ -54,13 +65,15 @@ export default function Page() {
                     <BlockRenderer
                         key={block.publicId}
                         block={block}
-                        onRowDragStart={handleDragStart}
-                        onRowDragEnd={handleDragEnd}
+
                         onSectionDragOver={handleSectionDragOver}
                         onSectionDrop={handleSectionDrop}
                         onSectionDragLeave={handleSectionDragLeave}
-                        draggedRow={draggedRow}
                         dragOverSectionId={dragOverSectionId}
+
+                        onRowDragStart={handleDragStart}
+                        onRowDragEnd={handleDragEnd}
+                        draggedRow={draggedRow}
                         onRowDragOver={handleRowDragOver}
                         onRowDrop={handleRowDrop}
                         rowDropPosition={rowDropPosition}
@@ -71,6 +84,13 @@ export default function Page() {
                         onColumnDragEnd={handleColumnDragEnd}
                         onColumnDragOver={handleColumnDragOver}
                         onColumnDrop={handleColumnDrop}
+
+                        onContentDragStart={handleContentDragStart}
+                        onContentDragEnd={handleContentDragEnd}
+                        onContentDragOver={handleContentDragOver}
+                        onContentDrop={handleContentDrop}
+                        contentDropPosition={contentDropPosition}
+                        onContentDragLeave={handleContentDragLeave}
                     />
                 ))
 

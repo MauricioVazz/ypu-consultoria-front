@@ -7,6 +7,7 @@ export default function BlockRenderer({
     block,
     parentBlock = null,
     ancestors = [],
+
     onRowDragStart,
     onRowDragEnd,
     onSectionDragOver,
@@ -17,12 +18,20 @@ export default function BlockRenderer({
     onRowDragOver,
     rowDropPosition,
     onRowDrop,
+
     draggedColumn,
     columnDropPosition,
     onColumnDragStart,
     onColumnDragEnd,
     onColumnDragOver,
     onColumnDrop,
+
+    onContentDragStart,
+    onContentDragEnd,
+    onContentDragOver,
+    onContentDrop,
+    contentDropPosition,
+    onContentDragLeave,
 }) {
 
     if (!validateBlock(block)) {
@@ -40,21 +49,30 @@ export default function BlockRenderer({
             block={block}
             parentBlock={parentBlock}
             ancestors={ancestors}
+
+            onContentDragStart={onContentDragStart}
+            onContentDragEnd={onContentDragEnd}
+            onContentDragOver={onContentDragOver}
+            onContentDrop={onContentDrop}
+            contentDropPosition={contentDropPosition}
+            onContentDragLeave={onContentDragLeave}
         >
             <Component
                 block={block}
                 parentBlock={parentBlock}
                 ancestors={ancestors}
-                onRowDragStart={onRowDragStart}
-                onRowDragEnd={onRowDragEnd}
+                
                 onSectionDragOver={onSectionDragOver}
                 onSectionDrop={onSectionDrop}
-                draggedRow={draggedRow}
                 onSectionDragLeave={onSectionDragLeave}
                 dragOverSectionId={dragOverSectionId}
-                onRowDragOver={onRowDragOver}
+
+                onRowDragStart={onRowDragStart}
+                onRowDragEnd={onRowDragEnd}
+                draggedRow={draggedRow}
                 rowDropPosition={rowDropPosition}
                 onRowDrop={onRowDrop}
+                onRowDragOver={onRowDragOver}
 
                 draggedColumn={draggedColumn}
                 columnDropPosition={columnDropPosition}
@@ -69,13 +87,15 @@ export default function BlockRenderer({
                         block={child}
                         parentBlock={block}
                         ancestors={[...ancestors, block,]}
-                        onRowDragStart={onRowDragStart}
-                        onRowDragEnd={onRowDragEnd}
+
                         onSectionDragOver={onSectionDragOver}
                         onSectionDrop={onSectionDrop}
-                        draggedRow={draggedRow}
                         onSectionDragLeave={onSectionDragLeave}
                         dragOverSectionId={dragOverSectionId}
+
+                        onRowDragStart={onRowDragStart}
+                        onRowDragEnd={onRowDragEnd}
+                        draggedRow={draggedRow}
                         onRowDragOver={onRowDragOver}
                         rowDropPosition={rowDropPosition}
                         onRowDrop={onRowDrop}
@@ -86,6 +106,13 @@ export default function BlockRenderer({
                         onColumnDragEnd={onColumnDragEnd}
                         onColumnDragOver={onColumnDragOver}
                         onColumnDrop={onColumnDrop}
+
+                        onContentDragStart={onContentDragStart}
+                        onContentDragEnd={onContentDragEnd}
+                        onContentDragOver={onContentDragOver}
+                        onContentDrop={onContentDrop}
+                        contentDropPosition={contentDropPosition}
+                        onContentDragLeave={onContentDragLeave}
                     />
                 ))}
             </Component>
