@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -33,19 +33,31 @@ import {
     SubmitButton,
 } from "./styles";
 
-import {
-    createProject,
-    updateProject,
-} from "@/services/project.service";
+import { createProject, updateProject, } from "@/services/project.service";
 
-import { getLibraryByProject } from "@/services/media";
+import { getLibraryByProject, getImagesByPublicIds } from "@/services/media";
+
 import ProjectCoverUpload from "../ProjectCoverUpload";
 import ProjectCoverPicker from "../ProjectCoverPicker";
 
-export default function ProjectFormModal({
+export default function ProjectFormModal(props) {
+    if (!props.open) return null;
+
+    const modalKey = props.project?.publicId ?? "new-project";
+
+    return (
+        <ProjectFormContent
+            key={modalKey}
+            {...props}
+        />
+    );
+}
+
+function ProjectFormContent({
     open,
     onClose,
     project = null,
+    onSave,
 }) {
     const router = useRouter();
 
@@ -61,7 +73,47 @@ export default function ProjectFormModal({
     const [coverImage, setCoverImage] = useState(null);
     const [showCoverPicker, setShowCoverPicker] = useState(false);
 
-    if (!open) return null;
+    const [loadingCover, setLoadingCover] = useState(false);
+
+    useEffect(() => {
+        if (!project) return;
+
+        let cancelled = false;
+
+        async function loadProjectCover() {
+            setLoadingCover(true);
+
+            try {
+                const library = await getLibraryByProject(project.publicId);
+
+                if (cancelled) return;
+
+                setLibraryPublicId(library.publicId);
+
+                if (project.cover) {
+                    const images = await getImagesByPublicIds([
+                        project.cover,
+                    ]);
+
+                    if (cancelled) return;
+
+                    setCoverImage(images[0] ?? null);
+                }
+            } catch (error) {
+                console.error("Erro ao carregar capa do projeto:", error);
+            } finally {
+                if (!cancelled) {
+                    setLoadingCover(false);
+                }
+            }
+        }
+
+        loadProjectCover();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [project]);
 
     const isEditing = Boolean(project);
     const currentStep = createdProject ? 2 : 1;
@@ -73,6 +125,23 @@ export default function ProjectFormModal({
         setError("");
 
         try {
+            // Modo de edição: atualizar informações do projeto.
+            if (isEditing) {
+                const updatedProject = await updateProject(project.publicId, {
+                    title,
+                    category,
+                    summary,
+                    ...(coverImage?.publicId && {
+                        cover: coverImage.publicId,
+                    }),
+                });
+
+                onSave?.(updatedProject);
+                onClose();
+
+                return;
+            }
+
             // Etapa 2: salvar a capa e abrir o Builder.
             if (createdProject) {
                 if (coverImage) {
@@ -120,7 +189,9 @@ export default function ProjectFormModal({
                         <ModalEyebrow>
                             {createdProject
                                 ? "QUASE LÁ"
-                                : "ÁREA ADMINISTRATIVA"}
+                                : isEditing
+                                    ? "INFORMAÇÕES DO PROJETO"
+                                    : "ÁREA ADMINISTRATIVA"}
                         </ModalEyebrow>
 
                         <ModalTitle>
@@ -134,7 +205,9 @@ export default function ProjectFormModal({
                         <ModalDescription>
                             {createdProject
                                 ? "Selecione uma imagem para representar seu projeto. Você poderá personalizar o restante da página no editor."
-                                : "Preencha algumas informações iniciais para começar a montar a página do seu projeto."}
+                                : isEditing
+                                    ? "Atualize os dados principais e a imagem de capa deste projeto."
+                                    : "Preencha algumas informações iniciais para começar a montar a página do seu projeto."}
                         </ModalDescription>
                     </div>
 
@@ -143,32 +216,41 @@ export default function ProjectFormModal({
                     </CloseButton>
                 </ModalHeader>
 
-                <Stepper>
-                    <Step $active={currentStep === 1} $done={currentStep > 1}>
-                        <StepNumber $active={currentStep === 1} $done={currentStep > 1}>
-                            {currentStep > 1 ? "✓" : "1"}
-                        </StepNumber>
+                {!isEditing && (
+                    <Stepper>
+                        <Step $active={currentStep === 1} $done={currentStep > 1}>
+                            <StepNumber
+                                $active={currentStep === 1}
+                                $done={currentStep > 1}
+                            >
+                                {currentStep > 1 ? "✓" : "1"}
+                            </StepNumber>
 
-                        <StepLabel $active={currentStep === 1} $done={currentStep > 1}>
-                            Dados do projeto
-                        </StepLabel>
-                    </Step>
+                            <StepLabel
+                                $active={currentStep === 1}
+                                $done={currentStep > 1}
+                            >
+                                Dados do projeto
+                            </StepLabel>
+                        </Step>
 
-                    <div className="step-line" />
+                        <div className="step-line" />
 
-                    <Step $active={currentStep === 2}>
-                        <StepNumber $active={currentStep === 2}>
-                            2
-                        </StepNumber>
+                        <Step $active={currentStep === 2}>
+                            <StepNumber $active={currentStep === 2}>
+                                2
+                            </StepNumber>
 
-                        <StepLabel $active={currentStep === 2}>
-                            Imagem de capa
-                        </StepLabel>
-                    </Step>
-                </Stepper>
+                            <StepLabel $active={currentStep === 2}>
+                                Imagem de capa
+                            </StepLabel>
+                        </Step>
+                    </Stepper>
+                )}
 
                 <Form onSubmit={handleSubmit}>
-                    {!createdProject ? (
+                    {/* Dados do projeto */}
+                    {!createdProject && (
                         <>
                             <FormGroup>
                                 <Label htmlFor="project-title">
@@ -221,16 +303,26 @@ export default function ProjectFormModal({
                                 <small>{summary.length}/500 caracteres</small>
                             </FormGroup>
                         </>
-                    ) : (
+                    )}
+
+                    {/* Imagem de capa: criação ou edição */}
+                    {(createdProject || isEditing) && (
                         <CoverSection>
                             <CoverDescription>
                                 <strong>Apresente seu projeto visualmente.</strong>
+
                                 <span>
                                     Escolha uma imagem que represente bem o trabalho
                                     realizado. Essa imagem será utilizada como capa
                                     do projeto.
                                 </span>
                             </CoverDescription>
+
+                            {loadingCover && (
+                                <FeedbackMessage $type="info">
+                                    Carregando imagem de capa...
+                                </FeedbackMessage>
+                            )}
 
                             {coverImage && (
                                 <CoverPreview>
@@ -241,6 +333,7 @@ export default function ProjectFormModal({
 
                                     <CoverInfo>
                                         <strong>Imagem selecionada</strong>
+
                                         <span>
                                             Sua capa está pronta para ser utilizada.
                                         </span>
@@ -251,7 +344,7 @@ export default function ProjectFormModal({
                             <CoverActions>
                                 <ActionButton
                                     type="button"
-                                    disabled={!libraryPublicId}
+                                    disabled={!libraryPublicId || loadingCover}
                                     onClick={() => setShowCoverPicker((current) => !current)}
                                 >
                                     {showCoverPicker
@@ -279,7 +372,7 @@ export default function ProjectFormModal({
                                 />
                             )}
 
-                            {!coverImage && (
+                            {!coverImage && !loadingCover && (
                                 <FeedbackMessage $type="info">
                                     A imagem de capa é opcional. Você também poderá
                                     adicioná-la posteriormente.
@@ -297,6 +390,7 @@ export default function ProjectFormModal({
                     {createdProject && (
                         <FeedbackMessage $type="success">
                             <strong>Projeto criado com sucesso!</strong>
+
                             <span>
                                 Agora você pode escolher uma capa e seguir para
                                 a edição da página.
@@ -312,9 +406,11 @@ export default function ProjectFormModal({
                         <SubmitButton type="submit" disabled={saving}>
                             {saving
                                 ? "Aguarde..."
-                                : createdProject
-                                    ? "Continuar para o editor"
-                                    : "Criar projeto"}
+                                : isEditing
+                                    ? "Salvar alterações"
+                                    : createdProject
+                                        ? "Continuar para o editor"
+                                        : "Criar projeto"}
                         </SubmitButton>
                     </ModalFooter>
                 </Form>
