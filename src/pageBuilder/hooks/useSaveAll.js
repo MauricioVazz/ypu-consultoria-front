@@ -36,7 +36,7 @@ export default function useSaveAll() {
         dirtyBlocks.length > 0 || hasStructureChanges();
 
     const handleSaveAll = async () => {
-        if (isSaving || !hasChanges) return;
+        if (isSaving || !hasChanges) return !hasChanges;
 
         try {
             setIsSaving(true);
@@ -70,12 +70,17 @@ export default function useSaveAll() {
                 );
             }
 
+            return true;
+
         } catch (error) {
             console.error("Erro ao salvar tudo:", error);
 
             setSaveError(
                 error.message || "Não foi possível salvar tudo."
             );
+
+            return false;
+            
         } finally {
             setIsSaving(false);
         }

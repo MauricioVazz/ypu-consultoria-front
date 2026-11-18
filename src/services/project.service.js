@@ -36,3 +36,9 @@ export async function updateProject(publicId, data) {
 
     return response.project;
 }
+
+export async function deleteProject(publicId) {
+    await api(`/projects/${publicId}`, {
+        method: "DELETE",
+    });
+}

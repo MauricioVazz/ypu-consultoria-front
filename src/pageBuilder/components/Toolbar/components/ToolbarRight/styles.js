@@ -78,3 +78,14 @@ export const PublishButton = styled(ToolbarButton)`
         background: ${({ theme }) => theme.colors.green};
     }
 `;
+
+export const DeleteButton = styled(ToolbarButton)`
+    background: transparent;
+    border-color: ${({ theme }) => theme.colors.danger};
+    color: ${({ theme }) => theme.colors.danger};
+
+    &:hover:not(:disabled) {
+        background: ${({ theme }) => theme.colors.danger};
+        color: ${({ theme }) => theme.colors.white};
+    }
+`;
