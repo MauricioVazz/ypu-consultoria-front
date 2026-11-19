@@ -5,6 +5,8 @@ import { create } from 'zustand';
 import { serializeLayout } from "@/pageBuilder/utils/serializeLayout";
 import { restoreLayoutStructure } from "@/pageBuilder/utils/restoreLayoutStructure";
 
+import { api } from "@/services/api";
+
 const findBlockByPublicId = (blocks, publicId) => {
     for (const block of blocks) {
         if (block.publicId === publicId) {
@@ -379,63 +381,35 @@ const useBuilderStore = create((set, get) => ({
             publicId
         ),
 
-    saveBlock: async publicId => {
-        const block = findBlockByPublicId(
-            get().layout,
-            publicId
-        );
 
-        if (!block) {
-            console.error(
-                "Block not found:",
-                publicId
-            );
-            return;
-        }
+saveBlock: async publicId => {
+    const block = findBlockByPublicId(
+        get().layout,
+        publicId
+    );
 
-        try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/blocks/${publicId}`,
-                {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        content: block.content,
-                    }),
-                }
-            );
+    if (!block) {
+        console.error("Block not found:", publicId);
+        return;
+    }
 
-            if (!response.ok) {
-                const errorData = await response.json();
+    try {
+        await api(`/blocks/${publicId}`, {
+            method: "PATCH",
+            body: JSON.stringify({
+                content: block.content,
+            }),
+        });
 
-                console.error(
-                    "Backend save error:",
-                    errorData
-                );
+        console.log("Block saved successfully:", publicId);
 
-                throw new Error(
-                    `Failed to save block: ${response.status}`
-                );
-            }
+        get().markBlockSaved(publicId);
 
-            console.log(
-                "Block saved successfully:",
-                publicId
-            );
-
-            get().markBlockSaved(publicId);
-
-        } catch (error) {
-            console.error(
-                "Error saving block:",
-                error
-            );
-
-            throw error;
-        }
-    },
+    } catch (error) {
+        console.error("Error saving block:", error);
+        throw error;
+    }
+},
 
     updateBlock: (publicId, content) => {
 
