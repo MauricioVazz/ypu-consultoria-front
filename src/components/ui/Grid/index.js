@@ -1,40 +1,22 @@
-'use client';
 
-import styled from 'styled-components';
+import { Children } from "react";
 
-const Wrapper = styled.div`
-    display: grid;
-
-    grid-template-columns: repeat(${({ $columns }) => $columns}, 1fr);
-
-    gap: ${({ theme, $gap }) =>
-        theme.spacing[$gap?.toLowerCase()] ??
-        theme.spacing.md};
-
-    width: 100%;
-`;
+import { GridWrapper } from "./styles";
 
 export default function Grid({
-
     columns = 3,
-
     gap = "MD",
-
-    children
-
+    children,
 }) {
+    const items = Children.toArray(children);
 
     return (
-
-        <Wrapper
+        <GridWrapper
             $columns={columns}
             $gap={gap}
+            $itemCount={items.length}
         >
-
-            {children}
-
-        </Wrapper>
-
+            {items}
+        </GridWrapper>
     );
-
 }

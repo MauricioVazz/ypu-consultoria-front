@@ -1,4 +1,4 @@
-import Grid from "@/pageBuilder/components/ui/Grid";
+import Grid from "@/components/ui/Grid";
 
 import {
     MetricCard,

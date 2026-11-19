@@ -15,33 +15,51 @@ export default function Image({ block }) {
     );
 
     const style = resolveStyle(content);
-    const [image, setImage] = useState(null);
+    const [imageData, setImageData] = useState({
+        publicId: null,
+        image: null,
+    });
+
+    const image =
+        imageData.publicId === imagePublicId
+            ? imageData.image
+            : null;
 
     const aspectRatio =
         content.aspectRatio === "AUTO" &&
-        image?.width &&
-        image?.height
+            image?.width &&
+            image?.height
             ? `${image.width} / ${image.height}`
             : style.aspectRatio || "16 / 9";
 
-    useEffect(() => {
-        if (!imagePublicId) {
-            return;
-        }
+useEffect(() => {
+    if (!imagePublicId) return;
 
-        async function loadImage() {
-            try {
-                const images =
-                    await getImagesByPublicIds([imagePublicId]);
+    let cancelled = false;
 
-                setImage(images[0] ?? null);
-            } catch (err) {
-                console.error(err);
+    async function loadImage() {
+        try {
+            const images = await getImagesByPublicIds([imagePublicId]);
+
+            if (!cancelled) {
+                setImageData({
+                    publicId: imagePublicId,
+                    image: images[0] ?? null,
+                });
+            }
+        } catch (err) {
+            if (!cancelled) {
+                console.error("Erro ao carregar imagem:", err);
             }
         }
+    }
 
-        loadImage();
-    }, [imagePublicId]);
+    loadImage();
+
+    return () => {
+        cancelled = true;
+    };
+}, [imagePublicId]);
 
     return (
         <figure
@@ -72,7 +90,7 @@ export default function Image({ block }) {
                             "Imagem"
                         }
                         fill
-                        sizes="100vw"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 1200px"
                         style={{
                             objectFit: style.objectFit,
                         }}

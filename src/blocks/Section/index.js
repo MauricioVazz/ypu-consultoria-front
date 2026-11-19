@@ -1,10 +1,7 @@
-"use client";
 
 import { resolveStyle } from "@/renderer/theme/resolveStyle";
 
-import BuilderContainer from "@/pageBuilder/components/ui/BuilderContainer";
-
-import useBlockSelection from "@/pageBuilder/hooks/useBlockSelection";
+import Container from "@/components/ui/Container";
 
 import {
     SectionContainer,
@@ -13,30 +10,17 @@ import {
     SectionChildren,
 } from "./styles";
 
-export default function Section({
-    block,
-    children,
-    parentBlock = null,
-    ancestors = [],
-}) {
-    const { isSelected, handleSelect } = useBlockSelection(
-        block,
-        parentBlock,
-        ancestors
-    );
-
-    const { content } = block;
+export default function Section({ block, children }) {
+    const { content = {} } = block;
 
     const style = resolveStyle(content);
 
     return (
         <SectionContainer
-            onClick={handleSelect}
             $paddingTop={style.paddingTop}
             $paddingBottom={style.paddingBottom}
             $background={style.background}
             $minHeight={style.minHeight}
-            $isSelected={isSelected}
         >
             {content.overlay && (
                 <SectionOverlay
@@ -45,11 +29,11 @@ export default function Section({
             )}
 
             <SectionContent>
-                <BuilderContainer maxWidth={content.maxWidth}>
+                <Container maxWidth={content.maxWidth}>
                     <SectionChildren $gap={style.gap}>
                         {children}
                     </SectionChildren>
-                </BuilderContainer>
+                </Container>
             </SectionContent>
         </SectionContainer>
     );

@@ -22,7 +22,9 @@ export default function CTA({ block }) {
             }}
         >
             <a
-                href={content.href}
+                href={content.href || undefined}
+                aria-disabled={!content.href}
+                onClick={!content.href ? (event) => event.preventDefault() : undefined}
                 style={{
                     display: "inline-block",
                     width: resolveWidth(content.width),

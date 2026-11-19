@@ -1,3 +1,4 @@
+
 import styled from "styled-components";
 
 export const SectionContainer = styled.section`
@@ -9,15 +10,6 @@ export const SectionContainer = styled.section`
 
     background: ${({ $background }) => $background};
     min-height: ${({ $minHeight }) => $minHeight};
-
-    cursor: pointer;
-
-    outline: ${({ $isSelected }) =>
-        $isSelected
-            ? "3px solid #3B82F6"
-            : "1px dashed transparent"};
-
-    outline-offset: -3px;
 `;
 
 export const SectionOverlay = styled.div`

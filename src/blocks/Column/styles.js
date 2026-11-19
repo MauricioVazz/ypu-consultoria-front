@@ -1,3 +1,4 @@
+
 import styled from "styled-components";
 
 export const ColumnContainer = styled.div`
@@ -11,39 +12,20 @@ export const ColumnContainer = styled.div`
 
     box-sizing: border-box;
 
-    grid-column: span ${({ $viewport, $desktop, $tablet, $mobile }) => {
-        if ($viewport === "mobile") {
-            return $mobile;
-        }
+    grid-column: span ${({ $desktop }) => $desktop || 12};
 
-        if ($viewport === "tablet") {
-            return $tablet;
-        }
+    gap: ${({ $style }) => $style.gap};
 
-        return $desktop;
-    }};
+    padding-top: ${({ $style }) => $style.paddingTop};
+    padding-right: ${({ $style }) => $style.paddingRight};
+    padding-bottom: ${({ $style }) => $style.paddingBottom};
+    padding-left: ${({ $style }) => $style.paddingLeft};
 
-    gap: ${({ $style }) =>
-        $style.gap};
+    @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+        grid-column: span ${({ $tablet }) => $tablet || 12};
+    }
 
-    padding-top: ${({ $style }) =>
-        $style.paddingTop};
-
-    padding-right: ${({ $style }) =>
-        $style.paddingRight};
-
-    padding-bottom: ${({ $style }) =>
-        $style.paddingBottom};
-
-    padding-left: ${({ $style }) =>
-        $style.paddingLeft};
-
-    outline: ${({ $isSelected }) =>
-        $isSelected
-            ? "3px solid #3B82F6"
-            : "1px dashed transparent"};
-
-    outline-offset: -3px;
-
-    cursor: pointer;
+    @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+        grid-column: span ${({ $mobile }) => $mobile || 12};
+    }
 `;

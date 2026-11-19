@@ -15,7 +15,7 @@ export default function Text({ block }) {
                 ...style,
             }}
         >
-            {content.content}
+            {content.content ?? ""}
         </p>
 
     );
