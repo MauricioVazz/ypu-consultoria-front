@@ -1,73 +1,81 @@
-'use client'
 
-import Container from '@/components/ui/Container'
-import { HeaderContainer } from './styles'
-import Image from 'next/image'
-import { BiLogoWhatsapp } from 'react-icons/bi'
+'use client';
+
+import { useState } from 'react';
+import Image from 'next/image';
+import { BiLogoWhatsapp } from 'react-icons/bi';
+import { FiMenu, FiX } from 'react-icons/fi';
+
+import Container from '@/components/ui/Container';
+import { HeaderContainer } from './styles';
+
+const navigation = [
+    { label: 'Início', href: '#inicio' },
+    { label: 'Sobre', href: '#sobre' },
+    { label: 'Serviços', href: '#servicos' },
+    { label: 'Projetos', href: '#projetos' },
+    { label: 'Profissionais', href: '#profissionais' },
+    { label: 'Contato', href: '#contato' },
+];
 
 export default function Header() {
-  return (
-    <HeaderContainer>
-      <Container>
+    const [menuOpen, setMenuOpen] = useState(false);
 
-        <div className="header-content">
+    function closeMenu() {
+        setMenuOpen(false);
+    }
 
-          <div className='logo-container'>
-            <div className='logo'>
-              <Image
-                src='/images/logo.png'
-                alt='Logo da YPU'
-                width={120}
-                height={67}
-                priority
-              />
-            </div>
-          </div>
+    return (
+        <HeaderContainer>
+            <Container>
+                <div className="header-content">
 
-          <div>
-            <nav className='navbar'>
+                    <a href="#inicio" className="logo" onClick={closeMenu}>
+                        <Image
+                            src="/images/logo.png"
+                            alt="Logo da YPU"
+                            width={105}
+                            height={59}
+                            priority
+                        />
+                    </a>
 
-              <ul className='nav-list'>
+                    <nav className={`navbar ${menuOpen ? 'active' : ''}`}>
+                        <ul className="nav-list">
+                            {navigation.map((item) => (
+                                <li className="nav-item" key={item.label}>
+                                    <a href={item.href} onClick={closeMenu}>
+                                        {item.label}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
 
-                <li className='nav-item'>
-                  <a href='#'>Inicio</a>
-                </li>
+                    <div className="header-actions">
+                        <a
+                            href="#"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="contact-button"
+                        >
+                            <BiLogoWhatsapp size={21} />
+                            <span>WhatsApp</span>
+                        </a>
 
-                <li className='nav-item'>
-                  <a href='#'>Sobre</a>
-                </li>
+                        <button
+                            type="button"
+                            className="menu-toggle"
+                            onClick={() => setMenuOpen(!menuOpen)}
+                            aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+                            aria-expanded={menuOpen}
+                        >
+                            {menuOpen ? <FiX size={25} /> : <FiMenu size={25} />}
+                        </button>
+                    </div>
 
-                <li className='nav-item'>
-                  <a href='#'>Serviços</a>
-                </li>
-
-                <li className='nav-item'>
-                  <a href='#'>Projetos</a>
-                </li>
-
-                <li className='nav-item'>
-                  <a href='#'>Proficionais</a>
-                </li>
-
-                <li className='nav-item'>
-                  <a href='#'>Contato</a>
-                </li>
-
-              </ul>
-            </nav>
-          </div>
-
-          <div className='button-container'>
-            <button className='contact-button'>
-              <div className='contact-content'>                
-                <BiLogoWhatsapp size={24} color='#FFFFFF' /> WhatsApp
-              </div>
-            </button>
-          </div>
-
-        </div>
-
-      </Container>
-    </HeaderContainer>
-  )
+                </div>
+            </Container>
+        </HeaderContainer>
+    );
 }

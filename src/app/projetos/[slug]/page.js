@@ -3,6 +3,8 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 import Renderer from "@/renderer/Renderer";
+import Header from "@/components/layout/Header";
+
 import { getProject } from "@/services/project.service";
 
 export default async function ProjetoPage({ params }) {
@@ -29,6 +31,8 @@ export default async function ProjetoPage({ params }) {
 
     return (
         <main>
+            <Header/>
+
             <Renderer blocks={project.layout} />
         </main>
     );
