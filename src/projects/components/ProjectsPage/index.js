@@ -11,6 +11,8 @@ import ProjectsGrid from "../ProjectsGrid";
 import ProjectsContainer from "../ProjectsContainer";
 import ProjectFormModal from "../ProjectFormModal";
 
+import { getCurrentAdmin } from "@/services/auth.service";
+
 import {
     Page,
     PageHeader,
@@ -30,6 +32,37 @@ export default function ProjectsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [checkingAdmin, setCheckingAdmin] = useState(true);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        async function checkAdminSession() {
+            try {
+                await getCurrentAdmin();
+
+                if (isMounted) {
+                    setIsAdmin(true);
+                }
+            } catch {
+                if (isMounted) {
+                    setIsAdmin(false);
+                }
+            } finally {
+                if (isMounted) {
+                    setCheckingAdmin(false);
+                }
+            }
+        }
+
+        checkAdminSession();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
     useEffect(() => {
         async function loadProjects() {
@@ -95,13 +128,15 @@ export default function ProjectsPage() {
                             </span>
                         </ProjectCount>
 
-                        <CreateButton
-                            type="button"
-                            onClick={() => setIsModalOpen(true)}
-                        >
-                            <FiPlus />
-                            Criar novo projeto
-                        </CreateButton>
+                        {!checkingAdmin && isAdmin && (
+                            <CreateButton
+                                type="button"
+                                onClick={() => setIsModalOpen(true)}
+                            >
+                                <FiPlus />
+                                Criar novo projeto
+                            </CreateButton>
+                        )}
                     </ProjectsToolbar>
                 </PageHeader>
 
@@ -115,7 +150,10 @@ export default function ProjectsPage() {
                         {error}
                     </StateMessage>
                 ) : projects.length > 0 ? (
-                    <ProjectsGrid projects={projects} />
+                    <ProjectsGrid
+                        projects={projects}
+                        isAdmin={isAdmin}
+                    />
                 ) : (
                     <EmptyState>
                         <FiFolder />
@@ -128,10 +166,12 @@ export default function ProjectsPage() {
                 )}
             </ProjectsContainer>
 
-            <ProjectFormModal
-                open={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-            />
+            {isAdmin && (
+                <ProjectFormModal
+                    open={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                />
+            )}
         </Page>
     );
 }

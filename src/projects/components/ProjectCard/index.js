@@ -24,7 +24,7 @@ import {
     FiArrowUpRight
 } from "react-icons/fi";
 
-export default function ProjectCard({ project }) {
+export default function ProjectCard({ project, isAdmin }) {
     const statusLabels = {
         DRAFT: "Rascunho",
         PUBLISHED: "Publicado"
@@ -34,13 +34,13 @@ export default function ProjectCard({ project }) {
         <ProjectCardContainer>
             <ProjectCover>
                 {project.coverImage?.url ? (
-<Image
-    src={project.coverImage.url}
-    alt={project.coverImage.alt || project.title}
-    fill
-    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-    style={{ objectFit: "cover" }}
-/>
+                    <Image
+                        src={project.coverImage.url}
+                        alt={project.coverImage.alt || project.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        style={{ objectFit: "cover" }}
+                    />
                 ) : (
                     <CoverPlaceholder>
                         <FiImage />
@@ -48,16 +48,18 @@ export default function ProjectCard({ project }) {
                     </CoverPlaceholder>
                 )}
 
-                <EditButton
-                    type="button"
-                    title="Editar projeto"
-                    onClick={() => {
-                        window.location.href =
-                            `/admin/projetos/${project.publicId}/builder`;
-                    }}
-                >
-                    <FiEdit2 />
-                </EditButton>
+                {isAdmin && (
+                    <EditButton
+                        type="button"
+                        title="Editar projeto"
+                        onClick={() => {
+                            window.location.href =
+                                `/admin/projetos/${project.publicId}/builder`;
+                        }}
+                    >
+                        <FiEdit2 />
+                    </EditButton>
+                )}
             </ProjectCover>
 
             <ProjectInfo>
