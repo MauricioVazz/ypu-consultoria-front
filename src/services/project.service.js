@@ -1,11 +1,14 @@
 import { api } from "@/services/api";
 
-export async function getProject(slug) {
-    const response = await api(`/projects/${slug}`);
+export async function getProject(slug, cookieHeader) {
+    const response = await api(`/projects/${slug}`, {
+        headers: cookieHeader
+            ? { Cookie: cookieHeader }
+            : {},
+    });
 
     return response.project;
 }
-
 export async function getProjectLayout(publicId) {
     const response = await api(`/projects/${publicId}/layout`);
 

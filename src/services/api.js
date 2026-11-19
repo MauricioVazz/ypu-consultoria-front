@@ -21,9 +21,13 @@ export async function api(path, options = {}) {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(
+        const error = new Error(
             data.message || "Erro ao comunicar com a API."
         );
+
+        error.status = response.status;
+
+        throw error;
     }
 
     return data;
