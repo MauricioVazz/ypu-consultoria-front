@@ -1,6 +1,6 @@
 import { createElement } from "react";
 
-import Grid from "@/pageBuilder/components/ui/Grid";
+import Grid from "@/components/ui/Grid";
 
 import { resolveStyle } from "@/renderer/theme/resolveStyle";
 import { resolveCardStyle } from "@/renderer/theme/resolveCardStyle";

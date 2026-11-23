@@ -1,6 +1,4 @@
-
 import { Children } from "react";
-
 import { GridWrapper } from "./styles";
 
 export default function Grid({
