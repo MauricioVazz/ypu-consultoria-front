@@ -7,7 +7,7 @@ import { AboutSection, AboutTitle } from './styles'
 
 export default function About() {
     return (
-        <AboutSection>
+        <AboutSection id="sobre">
             <Container>
                 <AboutTitle>Sobre Nós</AboutTitle>
                 <EditorialRow

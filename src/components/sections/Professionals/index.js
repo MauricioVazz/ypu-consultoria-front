@@ -7,7 +7,7 @@ import { ProfessionalsTextSection, ProfessionalsTextTitle } from './styles'
 
 export default function ProfessionalsText() {
     return (
-        <ProfessionalsTextSection>
+        <ProfessionalsTextSection id="profissionais">
             <Container>
                 <ProfessionalsTextTitle>Nossos Profissionais</ProfessionalsTextTitle>
                 <ProfessionalsRow

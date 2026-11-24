@@ -8,6 +8,8 @@ import {
     FaClock,
 } from 'react-icons/fa'
 
+import useHomeSectionNavigation from '@/hooks/useHomeSectionNavigation'
+
 import {
     FooterContainer,
     FooterContent,
@@ -27,14 +29,22 @@ import {
 } from './styles'
 
 const navigationLinks = [
-    { label: 'Início', href: '#inicio' },
-    { label: 'Sobre', href: '#sobre' },
-    { label: 'Serviços', href: '#servicos' },
-    { label: 'Projetos', href: '#projetos' },
-    { label: 'Contato', href: '#contato' },
+    { label: 'Início', section: 'inicio' },
+    { label: 'Sobre', section: 'sobre' },
+    { label: 'Serviços', section: 'servicos' },
+    { label: 'Projetos', section: 'projetos' },
+    { label: 'Profissionais', section: 'profissionais' },
+    { label: 'Contato', section: 'contato' },
 ]
 
 export default function Footer() {
+    const navigateToSection = useHomeSectionNavigation()
+
+    function handleSectionNavigation(event, section) {
+        event.preventDefault()
+        navigateToSection(section)
+    }
+
     return (
         <FooterContainer>
             <FooterContent>
@@ -45,7 +55,13 @@ export default function Footer() {
 
                         <FooterLinks>
                             {navigationLinks.map((link) => (
-                                <FooterLink key={link.label} href={link.href}>
+                                <FooterLink
+                                    key={link.label}
+                                    href={`/#${link.section}`}
+                                    onClick={(event) =>
+                                        handleSectionNavigation(event, link.section)
+                                    }
+                                >
                                     {link.label}
                                 </FooterLink>
                             ))}
@@ -67,7 +83,12 @@ export default function Footer() {
                                 <span>ypu.consultoria@gmail.com</span>
                             </FooterContactItem>
 
-                            <FooterLink href="#contato">
+                            <FooterLink
+                                href="/#contato"
+                                onClick={(event) =>
+                                    handleSectionNavigation(event, 'contato')
+                                }
+                            >
                                 Fale conosco
                             </FooterLink>
                         </FooterContactList>
@@ -91,7 +112,7 @@ export default function Footer() {
 
                             <FooterSocialLinks>
                                 <FooterSocialLink
-                                    href="#"
+                                    href="https://wa.me/5512987654321"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
@@ -102,7 +123,7 @@ export default function Footer() {
                                 </FooterSocialLink>
 
                                 <FooterSocialLink
-                                    href="#"
+                                    href="https://www.instagram.com/ypu.consultoria/"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >

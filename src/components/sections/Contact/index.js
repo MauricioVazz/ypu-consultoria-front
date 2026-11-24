@@ -12,7 +12,7 @@ import {
 
 export default function Contact() {
     return (
-        <ContactSection>
+        <ContactSection id="contato">
             <Container>
                 <ContactTitle>Entre em contato</ContactTitle>
 

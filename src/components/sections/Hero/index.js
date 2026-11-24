@@ -14,7 +14,7 @@ import {
 
 export default function Hero() {
     return (
-        <HeroContainer>
+        <HeroContainer id="inicio">
             <Container>
                 <HeroContent>
                     <HeroLeftColumn>

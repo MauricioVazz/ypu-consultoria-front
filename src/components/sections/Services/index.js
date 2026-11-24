@@ -62,7 +62,7 @@ const services = [
 
 export default function Services() {
     return (
-        <ServicesSection>
+        <ServicesSection id="servicos">
             <Container>
                 <ServicesTitle>Serviços</ServicesTitle>
                 <ServicesGrid items={services} />

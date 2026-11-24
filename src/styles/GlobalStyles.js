@@ -11,7 +11,8 @@ export const GlobalStyles = createGlobalStyle`
   }
 
   html {
-    scroll-behavior: smooth;
+      scroll-behavior: smooth;
+      scroll-padding-top: 100px;
   }
 
   body {
