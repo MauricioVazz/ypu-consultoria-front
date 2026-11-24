@@ -6,6 +6,7 @@ import Projects from '@/components/sections/Projects'
 import Professionals from '@/components/sections/Professionals'
 import Partners from '@/components/sections/Partners'
 import Contact from '@/components/sections/Contact'
+import Footer from '@/components/layout/Footer'
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
       <Professionals />
       <Partners />
       <Contact />
+      <Footer />
     </>
   )
 }
